@@ -21,43 +21,25 @@ Plug 'airblade/vim-gitgutter'
 " Plug 'mileszs/ack.vim'
 Plug 'godlygeek/tabular'
 " Plug 'christoomey/vim-tmux-navigator'
-" Plug 'rking/ag.vim'
-" Plug 'stephpy/vim-php-cs-fixer', { 'for': 'php' }
 " Plug 'sheerun/vim-polyglot'
 " Plug 'Xuyuanp/nerdtree-git-plugin'
-" Plug 'posva/vim-vue'
-" Plug 'altercation/vim-colors-solarized'
-Plug 'suan/vim-instant-markdown'
 Plug 'vim-airline/vim-airline-themes'
-" Plug 'w0rp/ale'
 Plug 'scrooloose/syntastic'
 Plug 'fatih/vim-go'
 Plug 'rust-lang/rust.vim'
 Plug 'neovim/nvim-lsp'
 
-" Plug 'vim-scripts/peaksea'
-" Plug 'wesgibbs/vim-irblack'
-" Plug 'junegunn/goyo.vim'
 Plug 'morhetz/gruvbox'
 " Plug 'marcweber/vim-addon-mw-utils'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-Plug 'ryanoasis/vim-devicons'
+" Plug 'ryanoasis/vim-devicons'
 Plug 'mbbill/undotree'
 Plug 'lambdalisue/suda.vim'
 Plug 'tpope/vim-obsession'
-Plug 'edkolev/tmuxline.vim'
+" Plug 'edkolev/tmuxline.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 " Plug 'racer-rust/vim-racer'
-
-" if has('nvim')
-  " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  " Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
-" else
-  " Plug 'Shougo/deoplete.nvim'
-  " Plug 'roxma/nvim-yarp'
-  " Plug 'roxma/vim-hug-neovim-rpc'
-" endif
 
 call plug#end()
 
@@ -93,7 +75,7 @@ endfunction
 
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
-let g:airline#extensions#tmuxline#enabled = 0
+" let g:airline#extensions#tmuxline#enabled = 0
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => rust.vim
@@ -115,30 +97,9 @@ let g:gruvbox_contrast_light = 'hard'
 let g:gruvbox_contrast_dark = 'soft'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => deoplete.nvim
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" let g:deoplete#enable_at_startup = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => ack.vim
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" if executable('ag')
-  " let g:ackprg = 'ag --vimgrep'
-" endif
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-devicons
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:WebDevIconsNerdTreeGitPluginForceVAlign=1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Vimroom
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" let g:goyo_width=100
-" let g:goyo_margin_top = 2
-" let g:goyo_margin_bottom = 2
-" nnoremap <silent> <leader>yo :Goyo<cr>
-" nnoremap <silent> <leader>yq :Goyo!<cr>
+" let g:WebDevIconsNerdTreeGitPluginForceVAlign=1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Tabular
@@ -162,11 +123,6 @@ endfunction
 " let g:ctrlp_custom_ignore = 'node_modules\|^\.DS_Store\|^\.git\|^\.coffee'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Vim instant markdown
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:instant_markdown_slow = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
@@ -188,6 +144,9 @@ nnoremap <leader>w :w<CR>
 
 " Save a file as root (,W)
 noremap <leader>W :w suda://%<CR>
+
+" Prevent auto split line
+set formatoptions-=tc
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -526,9 +485,9 @@ set completeopt=longest,menuone
 " vim-airline config
 let g:airline#extensions#bufferline#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#branch#enabled = 1
-let g:airline_powerline_fonts = 1
-" let g:airline#extensions#hunks#hunk_symbols = ['+', '~', '-']
+" let g:airline#extensions#branch#enabled = 1
+" let g:airline_powerline_fonts = 1
+let g:airline#extensions#hunks#hunk_symbols = ['+', '~', '-']
 let g:airline_theme = 'random'
 
 " Add spaces after comment delimiters by default
@@ -549,9 +508,6 @@ let g:UltiSnipsEditSplit="vertical"
 " Enable HTML/CSS syntax highlighting in js file
 let g:javascript_enable_domhtmlcss = 1
 let g:javascript_plugin_jsdoc = 1
-
-" php-cs-fixer
-let g:php_cs_fixer_fixers_list = "-psr0"
 
 " Keyboard shortcuts
 " inoremap <expr> <CR>    pumvisible() ? "\<C-y>" : "\<CR>"

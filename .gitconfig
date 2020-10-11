@@ -147,8 +147,8 @@
 	followTags = true
 
 [user]
-	name = Persevere Von
-	email = wu543065657@163.com
+	name = bohrasd
+	email = bohrasd@live.cn
 [credential]
 	helper = cache --timeout=2592000
 [pull]
