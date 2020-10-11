@@ -1,12 +1,12 @@
-我的 zsh，.gitconfig，tmux，nvim 配置
+我的 zsh, git, tmux, nvim, alacritty配置
 
 ### 安装
 
-自行安装 zsh，.gitconfig，tmux，nvim
+自行安装 zsh, git, tmux, neovim(nightly), pynvim(arch)/python3-nvim(fedora), starship, navi, fzf, ripgrep, alacritty
 
 ```bash
-git clone https://github.com/persevereVon/dotfiles.git ~/.dotfiles
-bash ./dotfiles/install.sh
+git clone https://github.com/bohrasd/dotfiles.git ~/.dotfiles
+bash ./.dotfiles/install.sh
 ```
 
 ### 快捷键
