@@ -1,6 +1,6 @@
 export DOTFILES=$HOME/.dotfiles
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/.cargo/bin:$DOTFILES/bin:$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.composer/vendor/bin/:$HOME/go/bin:$PATH
+export PATH=$DOTFILES/bin:$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.composer/vendor/bin/:$HOME/go/bin:$PATH
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -39,15 +39,17 @@ export PATH=$HOME/.cargo/bin:$DOTFILES/bin:$HOME/bin:$HOME/.local/bin:/usr/local
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
 HIST_STAMPS="mm/dd/yyyy"
-setopt EXTENDED_HISTORY
-setopt INC_APPEND_HISTORY
-setopt SHARE_HISTORY
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
-setopt HIST_REDUCE_BLANKS
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory
+
+# ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
+source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+bindkey -e
+
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # User configuration
 
@@ -57,24 +59,27 @@ setopt HIST_REDUCE_BLANKS
 export LANG=zh_CN.UTF-8
 
 # Preferred editor for local and remote sessions
-if hash nvim 2>/dev/null; then
-    if [[ -n $SSH_CONNECTION ]]; then
-        export EDITOR='nvim'
-    else
-        export EDITOR='nvim'
-    fi
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='nvim'
+else
+  export EDITOR='nvim'
 fi
+
 
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
 
+autoload -Uz compinit
+compinit
+
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
+export ZSH_CACHE_DIR=~/.dotfiles/zsh/my-site-functions
 
 # Source all .zsh files inside the zsh/ directory
 for config ($DOTFILES/zsh/*.zsh) source $config
-
+unsetopt nomatch
 # Base16 Shell
 # BASE16_SHELL="$HOME/.config/base16-shell/base16-solarized.dark.sh"
 # [[ -s $BASE16_SHELL ]] && source $BASE16_SHELL
@@ -85,22 +90,12 @@ for config ($DOTFILES/zsh/*.zsh) source $config
 
 # export TERM=xterm-256color
 
-# install rbenv
-if hash rbenv 2>/dev/null; then
-    eval "$(rbenv init -)"
-fi
-
-if [[ -d ~/.rvm ]]; then
-    PATH=$HOME/.rvm/bin:$PATH # Add RVM to PATH for scripting
-    source ~/.rvm/scripts/rvm
-fi
-
 # Add GOPATH
-export GOPATH=$HOME/GoWork
+export GOPATH=$HOME/go
 export PATH="${GOPATH}/bin:$PATH"
 
 function proxy_on() {
-    export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
+    export no_proxy="localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,192.168.10.0/2410.96.0.0/12,192.168.99.0/24,192.168.39.0/24"
 
     if (( $# > 0 )); then
         valid=$(echo $@ | sed -n 's/\([0-9]\{1,3\}.\?\)\{4\}:\([0-9]\+\)/&/p')
@@ -112,7 +107,8 @@ function proxy_on() {
         export http_proxy="$proxy" \
                https_proxy=$proxy \
                ftp_proxy=$proxy \
-               rsync_proxy=$proxy
+               rsync_proxy=$proxy \
+               all_proxy=$proxy
         echo "Proxy environment variable set."
         return 0
     fi
@@ -134,17 +130,15 @@ function proxy_on() {
            HTTP_PROXY=$proxy \
            HTTPS_PROXY=$proxy \
            FTP_PROXY=$proxy \
-           RSYNC_PROXY=$proxy
+           RSYNC_PROXY=$proxy \
+           ALL_PROXY=$proxy \
+           all_proxy=$proxy
 }
 
 function proxy_off(){
     unset http_proxy https_proxy ftp_proxy rsync_proxy \
-          HTTP_PROXY HTTPS_PROXY FTP_PROXY RSYNC_PROXY
+          HTTP_PROXY HTTPS_PROXY FTP_PROXY RSYNC_PROXY ALL_PROXY all_proxy
     echo -e "Proxy environment variable removed."
-}
-
-function generate_random() {
-    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1
 }
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -156,14 +150,29 @@ function generate_random() {
 _fzf_compgen_path() {
   fd --hidden --exclude ".git" . "$1"
 }
+export PATH=$PATH:$HOME/.linkerd2/bin
 
 # Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
   fd --type d --hidden --exclude ".git" . "$1"
 }
+export PATH="${PATH}:${HOME}/.krew/bin"
 
 export FZF_DEFAULT_COMMAND='fd --type f'
 
-# export RUSTC_WRAPPER=$(which sccache)
+zstyle :compinstall filename '/home/bohr/.zshrc'
 
 eval "$(starship init zsh)"
+autoload -U select-word-style
+select-word-style bash
+
+export WORDCHARS=''
+
+export PATH=/home/bohr/.pgo/pgo:$PATH
+export PGOUSER=/home/bohr/.pgo/pgo/pgouser
+export PGO_CA_CERT=/home/bohr/.pgo/pgo/client.crt
+export PGO_CLIENT_CERT=/home/bohr/.pgo/pgo/client.crt
+export PGO_CLIENT_KEY=/home/bohr/.pgo/pgo/client.key
+
+export PGO_APISERVER_URL='https://127.0.0.1:8443'
+export PGO_NAMESPACE=pgo
