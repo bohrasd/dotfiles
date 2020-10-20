@@ -92,6 +92,7 @@ unsetopt nomatch
 
 # Add GOPATH
 export GOPATH=$HOME/go
+export GO111MODULE=on
 export PATH="${GOPATH}/bin:$PATH"
 
 function proxy_on() {
@@ -176,3 +177,5 @@ export PGO_CLIENT_KEY=/home/bohr/.pgo/pgo/client.key
 
 export PGO_APISERVER_URL='https://127.0.0.1:8443'
 export PGO_NAMESPACE=pgo
+
+#alias docker=podman
