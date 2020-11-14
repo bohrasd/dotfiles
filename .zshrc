@@ -44,7 +44,7 @@ HISTSIZE=10000
 SAVEHIST=10000
 setopt appendhistory
 
-# ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#777777"
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 bindkey -e
@@ -56,7 +56,7 @@ source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
-export LANG=zh_CN.UTF-8
+# export LANG=zh_CN.UTF-8
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -70,7 +70,9 @@ fi
 export ARCHFLAGS="-arch x86_64"
 
 autoload -Uz compinit
+autoload bashcompinit
 compinit
+bashcompinit
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
@@ -179,3 +181,22 @@ export PGO_APISERVER_URL='https://127.0.0.1:8443'
 export PGO_NAMESPACE=pgo
 
 #alias docker=podman
+source ~/.dotfiles/zsh/gita-completion.zsh
+source ~/.dotfiles/zsh/k3d-completion.zsh
+export LINKERD_NAMESPACE=linkerd
+source ~/.dotfiles/zsh/linkerd-completion.zsh
+source ~/.dotfiles/zsh/helm-completion.zsh
+source ~/.dotfiles/zsh/rabbit-completion.sh
+
+export IP=$(multipass info faasd --format json| jq '.info.faasd.ipv4[0]' | tr -d '\"')
+export OPENFAAS_URL=http://$IP:8080
+
+
+#rabbit on local
+alias rabbit='kubectl exec -ti -n duoji-staging-ns rabbitmq-staging-rabbitmq-ha-0 -- '
+alias rabbit-prod='kubectl exec -ti -n duoji-production-ns rabbitmq-prod-rabbitmq-ha-0 -- '
+
+export RABBIT_PASSWORD=$(kubectl get secret --namespace duoji-staging-ns rabbitmq-staging-rabbitmq-ha -o jsonpath="{.data.rabbitmq-password}" --context aliyun | base64 --decode)
+alias rabbitmqadmin='rabbitmqadmin --host 127.0.0.1 --port 15672 --username=admin --password=$RABBIT_PASSWORD'
+
+tm
