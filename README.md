@@ -2,7 +2,7 @@
 
 ### 安装
 
-自行安装 zsh, git, tmux, neovim(nightly), pynvim(arch)/python3-nvim(fedora), starship, navi, fzf, ripgrep, alacritty
+自行安装 zsh, git, tmux, neovim(nightly), pynvim(arch)/python3-nvim(fedora), starship, navi, fzf, ripgrep, alacritty, gita
 
 ```bash
 git clone https://github.com/bohrasd/dotfiles.git ~/.dotfiles

@@ -27,7 +27,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'scrooloose/syntastic'
 Plug 'fatih/vim-go'
 Plug 'rust-lang/rust.vim'
-Plug 'neovim/nvim-lsp'
+Plug 'neovim/nvim-lspconfig'
 
 Plug 'morhetz/gruvbox'
 " Plug 'marcweber/vim-addon-mw-utils'
@@ -46,7 +46,7 @@ call plug#end()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => nvim-lsp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-lua require'nvim_lsp'.rust_analyzer.setup({})
+lua require'lspconfig'.rust_analyzer.setup({})
 
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
 nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
@@ -488,7 +488,7 @@ let g:airline#extensions#tabline#enabled = 1
 " let g:airline#extensions#branch#enabled = 1
 " let g:airline_powerline_fonts = 1
 let g:airline#extensions#hunks#hunk_symbols = ['+', '~', '-']
-let g:airline_theme = 'random'
+let g:airline_theme = 'violet'
 
 " Add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1

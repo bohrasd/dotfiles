@@ -128,7 +128,7 @@ font:
     style: Italic
 
   # Point size
-  size: 10.0
+  size: 11.0
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -165,10 +165,14 @@ draw_bold_text_with_bright_colors: true
 # Colors (Tomorrow Night Bright)
 colors:
   # Default colors
+  # primary:
+    # background: '0x000000'
+    # foreground: '0xeaeaea'
   primary:
-    background: '0x000000'
-    foreground: '0xeaeaea'
-
+    # background: '0xDFE6F4'
+    # foreground: '0x4C566A'
+   background:   '#2E3436'
+   foreground:   '#EEDDEE'
     # Bright and dim foreground colors
     #
     # The dimmed foreground color is calculated automatically if it is not present.
@@ -195,26 +199,44 @@ colors:
   #  background: '0x404040'
 
   # Normal colors
+  # normal:
+    # black:   '0x000000'
+    # red:     '0xd54e53'
+    # green:   '0xb9ca4a'
+    # yellow:  '0xe6c547'
+    # blue:    '0x7aa6da'
+    # magenta: '0xc397d8'
+    # cyan:    '0x70c0ba'
+    # white:   '0xeaeaea'
   normal:
-    black:   '0x000000'
-    red:     '0xd54e53'
-    green:   '0xb9ca4a'
-    yellow:  '0xe6c547'
-    blue:    '0x7aa6da'
-    magenta: '0xc397d8'
-    cyan:    '0x70c0ba'
-    white:   '0xeaeaea'
+    black:   '0x1e2127'
+    red:     '0xe06c75'
+    green:   '0x699C44'
+    yellow:  '0xE5C07B'
+    blue:    '0x3E8AC9'
+    magenta: '0xC45DE2'
+    cyan:    '0x2E9FAD'
+    white:   '0xabb2bf'
 
   # Bright colors
+  # bright:
+    # black:   '0x666666'
+    # red:     '0xff3334'
+    # green:   '0x9ec400'
+    # yellow:  '0xe7c547'
+    # blue:    '0x7aa6da'
+    # magenta: '0xb77ee0'
+    # cyan:    '0x54ced6'
+    # white:   '0xffffff'
   bright:
-    black:   '0x666666'
-    red:     '0xff3334'
-    green:   '0x9ec400'
-    yellow:  '0xe7c547'
-    blue:    '0x7aa6da'
-    magenta: '0xb77ee0'
-    cyan:    '0x54ced6'
-    white:   '0xffffff'
+    black:   '0x5c6370'
+    red:     '0xBE5046'
+    green:   '0x98c379'
+    yellow:  '0xd19a66'
+    blue:    '0x61afef'
+    magenta: '0xc678dd'
+    cyan:    '0x56b6c2'
+    white:   '0x5C6370'
 
   # Dim colors
   #
@@ -270,7 +292,7 @@ bell:
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-background_opacity: 1.0
+# background_opacity: 0.82
 
 # Mouse bindings
 #

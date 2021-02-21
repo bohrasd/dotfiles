@@ -43,6 +43,14 @@ HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 setopt appendhistory
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_BEEP
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#777777"
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -94,11 +102,11 @@ unsetopt nomatch
 
 # Add GOPATH
 export GOPATH=$HOME/go
-export GO111MODULE=on
+export GO111MODULE=auto
 export PATH="${GOPATH}/bin:$PATH"
 
 function proxy_on() {
-    export no_proxy="localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,192.168.10.0/2410.96.0.0/12,192.168.99.0/24,192.168.39.0/24"
+    export no_proxy="localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,192.168.10.0/2410.96.0.0/12,192.168.122.0/24,192.168.39.0/24"
 
     if (( $# > 0 )); then
         valid=$(echo $@ | sed -n 's/\([0-9]\{1,3\}.\?\)\{4\}:\([0-9]\+\)/&/p')
@@ -144,6 +152,10 @@ function proxy_off(){
     echo -e "Proxy environment variable removed."
 }
 
+generate_random () {
+  cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1
+}
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Use fd (https://github.com/sharkdp/fd) instead of the default find
@@ -180,6 +192,9 @@ export PGO_CLIENT_KEY=/home/bohr/.pgo/pgo/client.key
 export PGO_APISERVER_URL='https://127.0.0.1:8443'
 export PGO_NAMESPACE=pgo
 
+alias pgo-local='pgo --pgo-client-cert="/home/bohr/.pgo/pgo-local/client.crt" --pgo-client-key="/home/bohr/.pgo/pgo-local/client.key"'
+alias pgo-aliyun='pgo --pgo-client-cert="/home/bohr/.pgo/pgo-aliyun/client.crt" --pgo-client-key="/home/bohr/.pgo/pgo-aliyun/client.key"'
+
 #alias docker=podman
 source ~/.dotfiles/zsh/gita-completion.zsh
 source ~/.dotfiles/zsh/k3d-completion.zsh
@@ -187,16 +202,15 @@ export LINKERD_NAMESPACE=linkerd
 source ~/.dotfiles/zsh/linkerd-completion.zsh
 source ~/.dotfiles/zsh/helm-completion.zsh
 source ~/.dotfiles/zsh/rabbit-completion.sh
+source ~/.dotfiles/zsh/argocd-completion.zsh
+source ~/.dotfiles/zsh/glab-completion.zsh
 
-export IP=$(multipass info faasd --format json| jq '.info.faasd.ipv4[0]' | tr -d '\"')
-export OPENFAAS_URL=http://$IP:8080
-
+# export IP=$(multipass info faasd --format json| jq '.info.faasd.ipv4[0]' | tr -d '\"')
+# export OPENFAAS_URL=http://$IP:8080
 
 #rabbit on local
 alias rabbit='kubectl exec -ti -n duoji-staging-ns rabbitmq-staging-rabbitmq-ha-0 -- '
 alias rabbit-prod='kubectl exec -ti -n duoji-production-ns rabbitmq-prod-rabbitmq-ha-0 -- '
+alias rabbitmqadmin='rabbitmqadmin --host 127.0.0.1 --port 15672 --username=admin --password=8ehzl93eCy26vv5FXzLCapcO'
 
-export RABBIT_PASSWORD=$(kubectl get secret --namespace duoji-staging-ns rabbitmq-staging-rabbitmq-ha -o jsonpath="{.data.rabbitmq-password}" --context aliyun | base64 --decode)
-alias rabbitmqadmin='rabbitmqadmin --host 127.0.0.1 --port 15672 --username=admin --password=$RABBIT_PASSWORD'
-
-tm
+export CCP_CLI=kubectl
