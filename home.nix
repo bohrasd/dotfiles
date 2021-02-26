@@ -26,12 +26,54 @@
     pkgs.tmux
     pkgs.fzf
     pkgs.ripgrep
-    pkgs.starship
     pkgs.kubectl
     pkgs.k9s
     pkgs.github-release
     pkgs.du-dust
+    pkgs.ranger
+    pkgs.jsonnet
   ];
+
+  programs.git = {
+    enable = true;
+    userName  = "bohrasd";
+    userEmail = "bohrasdf@gmail.com";
+    aliases = {
+      l = log --pretty=oneline -n 20 --graph --abbrev-commit
+      s = status -s
+      d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
+      di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
+      p = push origin HEAD
+      c = clone --recursive
+      ca = !git add -A && git commit -av
+      go = "!f() { git checkout -b \"$1\" ${2:-\"origin\"}/$1 2> /dev/null || git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+      tags = tag -l
+      bs = branch -a
+      b = branch
+      co = checkout
+      rs = remote -v
+      amend = commit --amend --reuse-message=HEAD
+      credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+      reb = "!r() { git rebase -i HEAD~$1; }; r"
+      retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+      fb = "!f() { git branch -a --contains $1; }; f"
+      ft = "!f() { git describe --always --contains $1; }; f"
+      fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+      fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+      dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+      contributors = shortlog --summary --numbered
+      mpr = "!f() { \
+              if [ $(printf \"%s\" \"$1\" | grep '^[0-9]\\+$' > /dev/null; printf $?) -eq 0 ]; then \
+                      git fetch origin refs/pull/$1/head:pr/$1 && \
+                      git rebase master pr/$1 && \
+                      git checkout master && \
+                      git merge pr/$1 && \
+                      git branch -D pr/$1 && \
+                      git commit --amend -m \"$(git log -1 --pretty=%B)\n\nCloses #$1.\"; \
+              fi \
+      }; f"
+    }
+  };
 
   programs.zsh.enable = true;
   programs.zsh.enableCompletion = true;
@@ -39,6 +81,20 @@
   programs.zsh.initExtra = ''
     source ~/.dotfiles/.zshrc
   '';
+
+  programs.starship = {
+    enable = true;
+    enableZshIntegration = true;
+    settings = {
+      kubernetes = {
+        diabled = false;
+      };
+      env_var = {
+        variable = "http_proxy";
+        style = "dimmed bold bright-green";
+      };
+    };
+  };
 
   programs.neovim = {
     enable = true;
