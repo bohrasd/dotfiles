@@ -32,47 +32,133 @@
     pkgs.du-dust
     pkgs.ranger
     pkgs.jsonnet
+    pkgs.manpages
+    pkgs.libcap_manpages
+    pkgs.tinycc
+    pkgs.gdb
   ];
+
+  programs.tmux = {
+      enable = true;
+      extraConfig = ''
+        set -g message-command-style "fg=#8ea6d6,bg=#323f4f"
+        set -g status-right-style "none"
+        set -g pane-active-border-style "fg=#a796dd"
+        set -g status-style "none,bg=#323f4f"
+        set -g message-style "fg=#8ea6d6,bg=#3d4c5f"
+        set -g pane-border-style "fg=#323f4f"
+        set -g status-right-length "100"
+        set -g status-left-length "100"
+        setw -g window-status-activity-style "none"
+        setw -g window-status-separator " | "
+        setw -g window-status-style "none,fg=#a796dd,bg=#3d4c5f"
+
+        # Enable RGB colour if running in xterm(1)
+        set-option -sa terminal-overrides ",tmux-256color:RGB"
+        # Faster command sequences
+        set-option -sg escape-time 10
+
+        # set -g default-terminal "tmux-256color"
+
+        # start windows numbering at 1
+        set -g base-index 1
+
+        # No bells at all
+        set -g bell-action none
+
+        # Keep windows around after they exit
+        set -g remain-on-exit off
+
+        # Boost history
+        set -g history-limit 5000
+
+        # Change the prefix key to C-a
+        set -g prefix C-a
+        unbind C-b
+        bind C-a send-prefix
+
+        # Turn the mouse on, but without copy mode dragging
+        set -g mouse on
+        # unbind -n MouseDrag1Pane
+        # unbind -Tcopy-mode MouseDrag1Pane
+
+        # Some extra key bindings to select higher numbered windows
+        bind-key | split-window -h -c "#{pane_current_path}"
+        bind-key - split-window -v -c "#{pane_current_path}"
+        bind-key h select-pane -L
+        bind-key j select-pane -D
+        bind-key k select-pane -U
+        bind-key l select-pane -R
+
+        bind -r C-h select-window -t :-
+        bind -r C-l select-window -t :+
+
+        # Resize pane shortcuts
+        bind -r H resize-pane -L 10
+        bind -r J resize-pane -D 10
+        bind -r K resize-pane -U 10
+        bind -r L resize-pane -R 10
+
+        # Copy mode
+        bind-key [ copy-mode
+        bind-key ] paste-buffer
+
+        run -b 'tmux bind -t vi-copy v begin-selection 2> /dev/null || true'
+        run -b 'tmux bind -T copy-mode-vi v send -X begin-selection 2> /dev/null || true'
+        run -b 'tmux bind -t vi-copy C-v rectangle-toggle 2> /dev/null || true'
+        run -b 'tmux bind -T copy-mode-vi C-v send -X rectangle-toggle 2> /dev/null || true'
+        run -b 'tmux bind -t vi-copy y copy-selection 2> /dev/null || true'
+        run -b 'tmux bind -T copy-mode-vi y send -X copy-selection-and-cancel 2> /dev/null || true'
+        run -b 'tmux bind -t vi-copy Escape cancel 2> /dev/null || true'
+        run -b 'tmux bind -T copy-mode-vi Escape send -X cancel 2> /dev/null || true'
+
+        # Keys to toggle monitoring activity in a window, and synchronize-panes
+        bind m set monitor-activity
+        bind y set synchronize-panes\; display 'synchronize-panes #{?synchronize-panes,on,off}'
+
+        # Reload configuration
+        bind r source-file ~/.tmux.conf \; display '~/.tmux.conf sourced'
+
+        # Rename window to reflect current program
+        setw -g automatic-rename on
+
+        # Renumber windows when a window is closed
+        set -g renumber-windows on
+
+        setw -g mode-keys vi
+
+        bind L last-window
+      '';
+  };
 
   programs.git = {
     enable = true;
     userName  = "bohrasd";
     userEmail = "bohrasdf@gmail.com";
-    aliases = {
+    extraConfig = ''
+      [alias]
       l = log --pretty=oneline -n 20 --graph --abbrev-commit
       s = status -s
-      d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
-      di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
       p = push origin HEAD
       c = clone --recursive
       ca = !git add -A && git commit -av
-      go = "!f() { git checkout -b \"$1\" ${2:-\"origin\"}/$1 2> /dev/null || git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+      go = "!f() { git checkout -b \"''$1\" ''${2:-\"origin\"}/$1 2> /dev/null || git checkout -b \"''$1\" 2> /dev/null || git checkout \"''$1\"; }; f"
       tags = tag -l
       bs = branch -a
       b = branch
       co = checkout
       rs = remote -v
       amend = commit --amend --reuse-message=HEAD
-      credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
-      reb = "!r() { git rebase -i HEAD~$1; }; r"
-      retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
-      fb = "!f() { git branch -a --contains $1; }; f"
-      ft = "!f() { git describe --always --contains $1; }; f"
-      fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
-      fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+      credit = "!f() { git commit --amend --author \"''$1 <''$2>\" -C HEAD; }; f"
+      reb = "!r() { git rebase -i HEAD~''$1; }; r"
+      retag = "!r() { git tag -d ''$1 && git push origin :refs/tags/''$1 && git tag ''$1; }; r"
+      fb = "!f() { git branch -a --contains ''$1; }; f"
+      ft = "!f() { git describe --always --contains ''$1; }; f"
+      fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S''$1; }; f"
+      fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=''$1; }; f"
       dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
       contributors = shortlog --summary --numbered
-      mpr = "!f() { \
-              if [ $(printf \"%s\" \"$1\" | grep '^[0-9]\\+$' > /dev/null; printf $?) -eq 0 ]; then \
-                      git fetch origin refs/pull/$1/head:pr/$1 && \
-                      git rebase master pr/$1 && \
-                      git checkout master && \
-                      git merge pr/$1 && \
-                      git branch -D pr/$1 && \
-                      git commit --amend -m \"$(git log -1 --pretty=%B)\n\nCloses #$1.\"; \
-              fi \
-      }; f"
-    }
+    '';
   };
 
   programs.zsh.enable = true;
@@ -516,18 +602,6 @@
       endif
 
       set completeopt=longest,menuone
-
-      " noremap <leader>ss :call StripWhitespace()<CR>
-
-      " JSX in js file
-      " let g:jsx_ext_required = 0
-      " vim-airline config
-      let g:airline#extensions#bufferline#enabled = 1
-      let g:airline#extensions#tabline#enabled = 1
-      " let g:airline#extensions#branch#enabled = 1
-      " let g:airline_powerline_fonts = 1
-      let g:airline#extensions#hunks#hunk_symbols = ['+', '~', '-']
-      let g:airline_theme = 'violet'
 
       " Add spaces after comment delimiters by default
       let g:NERDSpaceDelims = 1
