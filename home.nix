@@ -1,5 +1,25 @@
 { config, pkgs, ... }:
 
+with import <nixpkgs> {};
+with builtins;
+with lib;
+with autoPatchelfHook;
+
+let
+linkerd = stdenv.mkDerivation {
+  name = "linkerd";
+  phases = [ "installPhase" ];
+  nativeBuildInputs = [
+    autoPatchelfHook
+  ];
+  src = fetchurl {
+    url = "https://github.com/linkerd/linkerd2/releases/download/stable-2.9.2/linkerd2-cli-stable-2.9.2-linux-amd64";
+    sha256 = "67e51106600fe48315659e9e3261efd0169e6bb229ceb8d96af0eabd159624ef";
+  };
+  installPhase = ''
+    cp -r ${src} $out
+  '';
+}; in
 {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -36,10 +56,20 @@
     pkgs.libcap_manpages
     pkgs.tinycc
     pkgs.gdb
+    pkgs.step-cli
+    pkgs.step-ca
+    pkgs.kubernetes-helm
+    linkerd
   ];
 
   programs.tmux = {
       enable = true;
+      baseIndex = 1;
+      escapeTime = 10;
+      historyLimit = 5000;
+      keyMode = "vi";
+      prefix = "C-a";
+      resizeAmount = 10;
       extraConfig = ''
         set -g message-command-style "fg=#8ea6d6,bg=#323f4f"
         set -g status-right-style "none"
@@ -55,27 +85,12 @@
 
         # Enable RGB colour if running in xterm(1)
         set-option -sa terminal-overrides ",tmux-256color:RGB"
-        # Faster command sequences
-        set-option -sg escape-time 10
-
-        # set -g default-terminal "tmux-256color"
-
-        # start windows numbering at 1
-        set -g base-index 1
 
         # No bells at all
         set -g bell-action none
 
         # Keep windows around after they exit
         set -g remain-on-exit off
-
-        # Boost history
-        set -g history-limit 5000
-
-        # Change the prefix key to C-a
-        set -g prefix C-a
-        unbind C-b
-        bind C-a send-prefix
 
         # Turn the mouse on, but without copy mode dragging
         set -g mouse on
@@ -85,19 +100,9 @@
         # Some extra key bindings to select higher numbered windows
         bind-key | split-window -h -c "#{pane_current_path}"
         bind-key - split-window -v -c "#{pane_current_path}"
-        bind-key h select-pane -L
-        bind-key j select-pane -D
-        bind-key k select-pane -U
-        bind-key l select-pane -R
 
         bind -r C-h select-window -t :-
         bind -r C-l select-window -t :+
-
-        # Resize pane shortcuts
-        bind -r H resize-pane -L 10
-        bind -r J resize-pane -D 10
-        bind -r K resize-pane -U 10
-        bind -r L resize-pane -R 10
 
         # Copy mode
         bind-key [ copy-mode
@@ -116,16 +121,11 @@
         bind m set monitor-activity
         bind y set synchronize-panes\; display 'synchronize-panes #{?synchronize-panes,on,off}'
 
-        # Reload configuration
-        bind r source-file ~/.tmux.conf \; display '~/.tmux.conf sourced'
-
         # Rename window to reflect current program
         setw -g automatic-rename on
 
         # Renumber windows when a window is closed
         set -g renumber-windows on
-
-        setw -g mode-keys vi
 
         bind L last-window
       '';
