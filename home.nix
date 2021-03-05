@@ -39,12 +39,8 @@ linkerd = stdenv.mkDerivation {
   # changes in each release.
   home.stateVersion = "21.05";
   home.packages = [
-    pkgs.jq
-    pkgs.htop
     pkgs.fortune
     pkgs.navi
-    pkgs.tmux
-    pkgs.fzf
     pkgs.ripgrep
     pkgs.kubectl
     pkgs.k9s
@@ -61,6 +57,9 @@ linkerd = stdenv.mkDerivation {
     pkgs.kubernetes-helm
     linkerd
   ];
+
+  programs.jq.enable = true;
+  programs.htop.enable = true;
 
   programs.tmux = {
       enable = true;
