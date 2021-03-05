@@ -70,6 +70,7 @@ linkerd = stdenv.mkDerivation {
       keyMode = "vi";
       prefix = "C-a";
       resizeAmount = 10;
+      customPaneNavigationAndResize = true;
       extraConfig = ''
         set -g message-command-style "fg=#8ea6d6,bg=#323f4f"
         set -g status-right-style "none"
@@ -126,8 +127,6 @@ linkerd = stdenv.mkDerivation {
 
         # Renumber windows when a window is closed
         set -g renumber-windows on
-
-        bind L last-window
       '';
   };
 
@@ -161,12 +160,49 @@ linkerd = stdenv.mkDerivation {
     '';
   };
 
-  programs.zsh.enable = true;
-  programs.zsh.enableCompletion = true;
-  programs.zsh.enableAutosuggestions = true;
-  programs.zsh.initExtra = ''
-    source ~/.dotfiles/.zshrc
-  '';
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    enableAutosuggestions = true;
+    defaultKeymap = "viins";
+    dotDir = ".dotfiles/zsh";
+    dirHashes = {
+        docs  = "$HOME/Documents";
+        vids  = "$HOME/Videos";
+        dl    = "$HOME/Downloads";
+    };
+    shellGlobalAliases = {
+        pgo-aliyun = "pgo --pgo-client-cert=\"/home/bohr/.pgo/pgo-aliyun/client.crt\" --pgo-client-key=\"/home/bohr/.pgo/pgo-aliyun/client.key\"";
+        rabbit="kubectl exec -ti -n duoji-staging-ns rabbitmq-staging-rabbitmq-ha-0 -- ";
+        rabbit-prod="kubectl exec -ti -n duoji-production-ns rabbitmq-prod-rabbitmq-ha-0 -- ";
+    };
+    envExtra = ''
+        WORDCHARS='''
+        PATH=/home/bohr/.pgo/pgo:$PATH
+        PGOUSER=/home/bohr/.pgo/pgo/pgouser
+        PGO_CA_CERT=/home/bohr/.pgo/pgo/client.crt
+        PGO_CLIENT_CERT=/home/bohr/.pgo/pgo/client.crt
+        PGO_CLIENT_KEY=/home/bohr/.pgo/pgo/client.key
+
+        PGO_APISERVER_URL="https://127.0.0.1:8443"
+        PGO_NAMESPACE=pgo
+        CCP_CLI=kubectl
+        GOPATH=$HOME/go
+        GO111MODULE=auto
+        PATH="''${GOPATH}/bin:$PATH"
+        FZF_DEFAULT_COMMAND="fd --type f"
+    '';
+    history = {
+       expireDuplicatesFirst = true;
+       extended = true;
+       ignoreDups = true;
+       ignoreSpace = true;
+       path = "~/.zsh_history";
+    };
+    initExtra = ''
+      source ~/.dotfiles/.zshrc
+    '';
+  };
 
   programs.starship = {
     enable = true;
