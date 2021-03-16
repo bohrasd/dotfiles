@@ -38,11 +38,27 @@ linkerd = stdenv.mkDerivation {
   # the Home Manager release notes for a list of state version
   # changes in each release.
   home.stateVersion = "21.05";
+
+  home.sessionVariables = {
+      INPUT_METHOD = "fcitx";
+      GTK_IM_MODULE = "fcitx";
+      QT_IM_MODULE = "fcitx";
+      XMODIFIERS = "@im=fcitx";
+  };
+
   home.packages = [
     pkgs.bubblewrap
     pkgs.imagemagick
+    pkgs.firefox
+    pkgs.wl-clipboard
+    pkgs.ldns
+    pkgs.glab
     pkgs.neofetch
     pkgs.st
+    pkgs.go
+    pkgs.ginkgo
+    pkgs.gh
+    pkgs.subversion
     pkgs.fortune
     pkgs.navi
     pkgs.ripgrep
@@ -59,6 +75,8 @@ linkerd = stdenv.mkDerivation {
     pkgs.step-cli
     pkgs.step-ca
     pkgs.kubernetes-helm
+    pkgs.vscode
+    pkgs.vscode-extensions.golang.Go
     linkerd
   ];
 
@@ -174,8 +192,7 @@ linkerd = stdenv.mkDerivation {
         vids  = "$HOME/Videos";
         dl    = "$HOME/Downloads";
     };
-    shellGlobalAliases = {
-        pgo-aliyun = "pgo --pgo-client-cert=\"/home/bohr/.pgo/pgo-aliyun/client.crt\" --pgo-client-key=\"/home/bohr/.pgo/pgo-aliyun/client.key\"";
+    shellAliases = {
         rabbit="kubectl exec -ti -n duoji-staging-ns rabbitmq-staging-rabbitmq-ha-0 -- ";
         rabbit-prod="kubectl exec -ti -n duoji-production-ns rabbitmq-prod-rabbitmq-ha-0 -- ";
     };
@@ -200,7 +217,7 @@ linkerd = stdenv.mkDerivation {
        extended = true;
        ignoreDups = true;
        ignoreSpace = true;
-       path = "~/.zsh_history";
+       path = "$HOME/.zsh_history";
     };
     initExtra = ''
       source ~/.dotfiles/.zshrc
@@ -244,6 +261,9 @@ linkerd = stdenv.mkDerivation {
       vim-visual-multi
       undotree
       vim-obsession
+      fzf
+      fzf-vim
+      tabular
     ];
     extraConfig = ''
 
@@ -260,6 +280,24 @@ linkerd = stdenv.mkDerivation {
       nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
       nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
       nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+
+      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      " => fzf.vim
+      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      command! -bang -nargs=* Rg
+        \ call fzf#vim#grep(
+        \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+        \   fzf#vim#with_preview(), <bang>0)
+
+      function! RipgrepFzf(query, fullscreen)
+        let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case %s || true'
+        let initial_command = printf(command_fmt, shellescape(a:query))
+        let reload_command = printf(command_fmt, '{q}')
+        let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+        call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+      endfunction
+
+      command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => rust.vim
@@ -769,6 +807,7 @@ linkerd = stdenv.mkDerivation {
   programs.fzf.enable = true;
   programs.fzf.enableZshIntegration = true;
 
+  nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
     (import (builtins.fetchTarball {
       url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
