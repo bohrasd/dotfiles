@@ -39,11 +39,18 @@ linkerd = stdenv.mkDerivation {
   # changes in each release.
   home.stateVersion = "21.05";
 
+  home.sessionPath = [
+    "$HOME/.pgo/pgo"
+    "$HOME/go"
+    "$HOME/.krew/bin"
+    "$HOME/.linkerd2/bin/"
+  ];
   home.sessionVariables = {
       INPUT_METHOD = "fcitx";
       GTK_IM_MODULE = "fcitx";
       QT_IM_MODULE = "fcitx";
       XMODIFIERS = "@im=fcitx";
+
   };
 
   home.packages = [
@@ -63,11 +70,13 @@ linkerd = stdenv.mkDerivation {
     pkgs.navi
     pkgs.ripgrep
     pkgs.kubectl
+    pkgs.krew
     pkgs.k9s
     pkgs.github-release
     pkgs.du-dust
     pkgs.ranger
     pkgs.jsonnet
+    pkgs.jsonnet-bundler
     pkgs.manpages
     pkgs.libcap_manpages
     pkgs.tinycc
@@ -192,26 +201,24 @@ linkerd = stdenv.mkDerivation {
         vids  = "$HOME/Videos";
         dl    = "$HOME/Downloads";
     };
+    sessionVariables = {
+      WORDCHARS           = "";
+      PGOUSER             = "/home/bohr/.pgo/pgo/pgouser";
+      PGO_CA_CERT         = "/home/bohr/.pgo/pgo/client.crt";
+      PGO_CLIENT_CERT     = "/home/bohr/.pgo/pgo/client.crt";
+      PGO_CLIENT_KEY      = "/home/bohr/.pgo/pgo/client.key";
+      PGO_APISERVER_URL   = "https://127.0.0.1:8443";
+      PGO_NAMESPACE       = "pgo";
+      CCP_CLI             = "kubectl";
+      GOPATH              = "$HOME/go";
+      GO111MODULE         = "auto";
+      FZF_DEFAULT_COMMAND = "fd --type f";
+    };
+
     shellAliases = {
         rabbit="kubectl exec -ti -n duoji-staging-ns rabbitmq-staging-rabbitmq-ha-0 -- ";
         rabbit-prod="kubectl exec -ti -n duoji-production-ns rabbitmq-prod-rabbitmq-ha-0 -- ";
     };
-    envExtra = ''
-        WORDCHARS='''
-        PATH=/home/bohr/.pgo/pgo:$PATH
-        PGOUSER=/home/bohr/.pgo/pgo/pgouser
-        PGO_CA_CERT=/home/bohr/.pgo/pgo/client.crt
-        PGO_CLIENT_CERT=/home/bohr/.pgo/pgo/client.crt
-        PGO_CLIENT_KEY=/home/bohr/.pgo/pgo/client.key
-
-        PGO_APISERVER_URL="https://127.0.0.1:8443"
-        PGO_NAMESPACE=pgo
-        CCP_CLI=kubectl
-        GOPATH=$HOME/go
-        GO111MODULE=auto
-        PATH="''${GOPATH}/bin:$PATH"
-        FZF_DEFAULT_COMMAND="fd --type f"
-    '';
     history = {
        expireDuplicatesFirst = true;
        extended = true;
@@ -280,6 +287,21 @@ linkerd = stdenv.mkDerivation {
       nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
       nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
       nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+
+      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      " => Tabular
+      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
+      function! s:align()
+        let p = '^\s*|\s.*\s|\s*$'
+        if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+          let column = strlen(substitute(getline('.')[0:col('.')],'[^|]',''','g'))
+          let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
+          Tabularize/|/l1
+          normal! 0
+          call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
+        endif
+      endfunction
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => fzf.vim
