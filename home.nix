@@ -56,8 +56,6 @@ linkerd = stdenv.mkDerivation {
   home.packages = [
     pkgs.tree
     pkgs.bubblewrap
-    pkgs.imagemagick
-    pkgs.firefox
     pkgs.wl-clipboard
     pkgs.ldns
     pkgs.glab
