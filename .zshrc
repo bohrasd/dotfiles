@@ -1,6 +1,7 @@
 export DOTFILES=$HOME/.dotfiles
 # If you come from bash you might have to change your $PATH.
-export PATH=$DOTFILES/bin:$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.composer/vendor/bin/:$HOME/go/bin:$PATH
+export PATH=$DOTFILES/bin:$HOME/bin:$HOME/.nix-profile/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.composer/vendor/bin/:$HOME/go/bin:$PATH
+
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -38,26 +39,9 @@ export PATH=$DOTFILES/bin:$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/s
 # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
-HIST_STAMPS="mm/dd/yyyy"
-HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+
 setopt appendhistory
-setopt EXTENDED_HISTORY
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
-setopt HIST_BEEP
-
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#777777"
-source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-bindkey -e
-
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # User configuration
 
@@ -65,14 +49,6 @@ source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # You may need to manually set your language environment
 # export LANG=zh_CN.UTF-8
-
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='nvim'
-else
-  export EDITOR='nvim'
-fi
-
 
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
@@ -101,9 +77,6 @@ unsetopt nomatch
 # export TERM=xterm-256color
 
 # Add GOPATH
-export GOPATH=$HOME/go
-export GO111MODULE=auto
-export PATH="${GOPATH}/bin:$PATH"
 
 function proxy_on() {
     export no_proxy="localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,192.168.10.0/2410.96.0.0/12,192.168.122.0/24,192.168.39.0/24"
@@ -165,15 +138,11 @@ generate_random () {
 _fzf_compgen_path() {
   fd --hidden --exclude ".git" . "$1"
 }
-export PATH=$PATH:$HOME/.linkerd2/bin
 
 # Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
   fd --type d --hidden --exclude ".git" . "$1"
 }
-export PATH="${PATH}:${HOME}/.krew/bin"
-
-export FZF_DEFAULT_COMMAND='fd --type f'
 
 zstyle :compinstall filename '/home/bohr/.zshrc'
 
@@ -181,36 +150,11 @@ eval "$(starship init zsh)"
 autoload -U select-word-style
 select-word-style bash
 
-export WORDCHARS=''
-
-export PATH=/home/bohr/.pgo/pgo:$PATH
-export PGOUSER=/home/bohr/.pgo/pgo/pgouser
-export PGO_CA_CERT=/home/bohr/.pgo/pgo/client.crt
-export PGO_CLIENT_CERT=/home/bohr/.pgo/pgo/client.crt
-export PGO_CLIENT_KEY=/home/bohr/.pgo/pgo/client.key
-
-export PGO_APISERVER_URL='https://127.0.0.1:8443'
-export PGO_NAMESPACE=pgo
-
-alias pgo-local='pgo --pgo-client-cert="/home/bohr/.pgo/pgo-local/client.crt" --pgo-client-key="/home/bohr/.pgo/pgo-local/client.key"'
-alias pgo-aliyun='pgo --pgo-client-cert="/home/bohr/.pgo/pgo-aliyun/client.crt" --pgo-client-key="/home/bohr/.pgo/pgo-aliyun/client.key"'
-
-#alias docker=podman
-source ~/.dotfiles/zsh/gita-completion.zsh
-source ~/.dotfiles/zsh/k3d-completion.zsh
-export LINKERD_NAMESPACE=linkerd
-source ~/.dotfiles/zsh/linkerd-completion.zsh
-source ~/.dotfiles/zsh/helm-completion.zsh
-source ~/.dotfiles/zsh/rabbit-completion.sh
-source ~/.dotfiles/zsh/argocd-completion.zsh
-source ~/.dotfiles/zsh/glab-completion.zsh
 
 # export IP=$(multipass info faasd --format json| jq '.info.faasd.ipv4[0]' | tr -d '\"')
 # export OPENFAAS_URL=http://$IP:8080
 
-#rabbit on local
-alias rabbit='kubectl exec -ti -n duoji-staging-ns rabbitmq-staging-rabbitmq-ha-0 -- '
-alias rabbit-prod='kubectl exec -ti -n duoji-production-ns rabbitmq-prod-rabbitmq-ha-0 -- '
-alias rabbitmqadmin='rabbitmqadmin --host 127.0.0.1 --port 15672 --username=admin --password=8ehzl93eCy26vv5FXzLCapcO'
+if [ -e /home/bohrasdf/.nix-profile/etc/profile.d/nix.sh ]; then . /home/bohrasdf/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+export NIX_PATH=$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH
 
-export CCP_CLI=kubectl
+echo "Did you know that:"; /usr/bin/whatis $(ls /usr/share/man/man1 | shuf -n 1 | cut -d. -f1)
