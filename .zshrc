@@ -151,10 +151,7 @@ autoload -U select-word-style
 select-word-style bash
 
 
-# export IP=$(multipass info faasd --format json| jq '.info.faasd.ipv4[0]' | tr -d '\"')
-# export OPENFAAS_URL=http://$IP:8080
-
-if [ -e /home/bohrasdf/.nix-profile/etc/profile.d/nix.sh ]; then . /home/bohrasdf/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 export NIX_PATH=$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH
 
-echo "Did you know that:"; /usr/bin/whatis $(ls /usr/share/man/man1 | shuf -n 1 | cut -d. -f1)
+cowsay -f $(ls ~/.nix-profile/share/cows | shuf -n 1 | cut -d. -f1) $(/usr/bin/whatis $(ls /usr/share/man/man1 | shuf -n 1 | cut -d. -f1) 2>/dev/null | shuf -n 1)

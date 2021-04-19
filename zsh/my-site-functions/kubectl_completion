@@ -1,4 +1,4 @@
-#compdef kubectl
+compdef kubectl
 
 # Copyright 2016 The Kubernetes Authors.
 #
@@ -12461,4 +12461,4 @@ BASH_COMPLETION_EOF
 }
 
 __kubectl_bash_source <(__kubectl_convert_bash_to_zsh)
-_complete kubectl 2>/dev/null
+# _complete kubectl 2>/dev/null
