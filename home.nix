@@ -82,6 +82,7 @@ linkerd = stdenv.mkDerivation {
     pkgs.step-cli
     pkgs.step-ca
     pkgs.kubernetes-helm
+    pkgs.cowsay
 
     pkgs.audit
     pkgs.cmake-language-server
@@ -236,7 +237,7 @@ linkerd = stdenv.mkDerivation {
     enableZshIntegration = true;
     settings = {
       kubernetes = {
-        diabled = false;
+        disabled = false;
       };
       env_var = {
         variable = "http_proxy";
