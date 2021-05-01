@@ -79,6 +79,10 @@ linkerd = stdenv.mkDerivation {
     pkgs.manpages
     pkgs.libcap_manpages
     pkgs.gdb
+    pkgs.gcc
+    pkgs.bat
+    pkgs.netcat
+    pkgs.ncdu
     pkgs.step-cli
     pkgs.step-ca
     pkgs.kubernetes-helm
