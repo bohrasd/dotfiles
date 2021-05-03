@@ -1,3 +1,5 @@
+#!/bin/bash
+set -e
 #lxc config set penguin security.nesting true
 #sh <(curl -L https://nixos.org/nix/install) --no-daemon
 . $HOME/.nix-profile/etc/profile.d/nix.sh

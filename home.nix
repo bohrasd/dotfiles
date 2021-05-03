@@ -86,16 +86,17 @@ linkerd = stdenv.mkDerivation {
     pkgs.step-cli
     pkgs.step-ca
     pkgs.kubernetes-helm
+    pkgs.erlang
     pkgs.cowsay
-
-    pkgs.audit
-    pkgs.cmake-language-server
-    pkgs.shellcheck
     linkerd
   ];
 
   programs.jq.enable = true;
-  programs.htop.enable = true;
+  programs.htop = {
+      enable = true;
+      meters.left = ["AllCPUs4" "Memory" "Swap"];
+      treeView = true;
+  };
 
   programs.tmux = {
       enable = true;
@@ -106,6 +107,9 @@ linkerd = stdenv.mkDerivation {
       prefix = "C-a";
       resizeAmount = 10;
       customPaneNavigationAndResize = true;
+      plugins = [
+        tmuxPlugins.yank
+      ];
       extraConfig = ''
         set -g message-command-style "fg=#8ea6d6,bg=#323f4f"
         set -g status-right-style "none"
@@ -139,19 +143,6 @@ linkerd = stdenv.mkDerivation {
 
         bind -r C-h select-window -t :-
         bind -r C-l select-window -t :+
-
-        # Copy mode
-        bind-key [ copy-mode
-        bind-key ] paste-buffer
-
-        run -b 'tmux bind -t vi-copy v begin-selection 2> /dev/null || true'
-        run -b 'tmux bind -T copy-mode-vi v send -X begin-selection 2> /dev/null || true'
-        run -b 'tmux bind -t vi-copy C-v rectangle-toggle 2> /dev/null || true'
-        run -b 'tmux bind -T copy-mode-vi C-v send -X rectangle-toggle 2> /dev/null || true'
-        run -b 'tmux bind -t vi-copy y copy-selection 2> /dev/null || true'
-        run -b 'tmux bind -T copy-mode-vi y send -X copy-selection-and-cancel 2> /dev/null || true'
-        run -b 'tmux bind -t vi-copy Escape cancel 2> /dev/null || true'
-        run -b 'tmux bind -T copy-mode-vi Escape send -X cancel 2> /dev/null || true'
 
         # Keys to toggle monitoring activity in a window, and synchronize-panes
         bind m set monitor-activity
@@ -208,16 +199,17 @@ linkerd = stdenv.mkDerivation {
     };
     sessionVariables = {
       WORDCHARS           = "";
-      PGOUSER             = "/home/bohr/.pgo/pgo/pgouser";
-      PGO_CA_CERT         = "/home/bohr/.pgo/pgo/client.crt";
-      PGO_CLIENT_CERT     = "/home/bohr/.pgo/pgo/client.crt";
-      PGO_CLIENT_KEY      = "/home/bohr/.pgo/pgo/client.key";
+      PGOUSER             = "$HOME/.pgo/pgo/pgouser";
+      PGO_CA_CERT         = "$HOME/.pgo/pgo/client.crt";
+      PGO_CLIENT_CERT     = "$HOME/.pgo/pgo/client.crt";
+      PGO_CLIENT_KEY      = "$HOME/.pgo/pgo/client.key";
       PGO_APISERVER_URL   = "https://127.0.0.1:8443";
       PGO_NAMESPACE       = "pgo";
       CCP_CLI             = "kubectl";
       GOPATH              = "$HOME/go";
       GO111MODULE         = "auto";
       FZF_DEFAULT_COMMAND = "fd --type f";
+      GITLAB_HOST         = "lqbyun.com";
     };
 
     shellAliases = {
@@ -276,6 +268,7 @@ linkerd = stdenv.mkDerivation {
       fzf
       fzf-vim
       tabular
+      suda
     ];
     extraConfig = ''
 
