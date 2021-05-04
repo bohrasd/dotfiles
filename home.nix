@@ -268,7 +268,6 @@ linkerd = stdenv.mkDerivation {
       fzf
       fzf-vim
       tabular
-      suda
     ];
     extraConfig = ''
 
@@ -413,9 +412,6 @@ linkerd = stdenv.mkDerivation {
 
       " save file
       nnoremap <leader>w :w<CR>
-
-      " Save a file as root (,W)
-      noremap <leader>W :w suda://%<CR>
 
       " Prevent auto split line
       set formatoptions-=tc
