@@ -80,8 +80,6 @@ linkerd = stdenv.mkDerivation {
     pkgs.libcap_manpages
     pkgs.gdb
     pkgs.gcc
-    pkgs.cmake
-    pkgs.nodePackages.bash-language-server
     pkgs.bat
     pkgs.netcat
     pkgs.ncdu
@@ -101,12 +99,10 @@ linkerd = stdenv.mkDerivation {
   programs.jq.enable = true;
   programs.htop = {
       enable = true;
-      settings = {
-          left_meters = ["AllCPUs4" "Memory" "Swap"];
-          fields = [ "PID" "USER" "PRIORITY" "NICE" "OOM" "M_SIZE" "M_RESIDENT" "M_SHARE" "STATE" "PERCENT_CPU"
-              "PERCENT_MEM" "TIME" "COMM" ];
-          vimMode = true;
-      };
+      meters.left = ["AllCPUs4" "Memory" "Swap"];
+      fields = [ "PID" "USER" "PRIORITY" "NICE" "OOM" "M_SIZE" "M_RESIDENT" "M_SHARE" "STATE" "PERCENT_CPU"
+                 "PERCENT_MEM" "TIME" "COMM" ];
+      vimMode = true;
   };
 
   programs.tmux = {
@@ -254,19 +250,17 @@ linkerd = stdenv.mkDerivation {
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
       nerdtree
-      gruvbox
       vim-surround
       vim-airline
       nerdcommenter
       vim-easymotion
       vim-gitgutter
       vim-fugitive
+      vim-snippets
+      ultisnips
       syntastic
       vim-go
       nvim-lspconfig
-      nvim-compe
-      vim-snippets
-      ultisnips
       vim-visual-multi
       undotree
       vim-obsession
@@ -275,111 +269,6 @@ linkerd = stdenv.mkDerivation {
       tabular
     ];
     extraConfig = ''
-
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      " => nvim-lsp
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      lua << EOF
-      local nvim_lsp = require('lspconfig')
-      local on_attach = function(client, bufnr)
-        local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-        local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-        buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-        -- Mappings.
-        local opts = { noremap=true, silent=true }
-        buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-        buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-        buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-        buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-        buf_set_keymap('n', '<leader>k', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-        buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-        buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-        buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-        buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-        buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-        buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-        buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-        buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-        buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-        buf_set_keymap('n', '<leader>Q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-
-        -- Set some keybinds conditional on server capabilities
-        if client.resolved_capabilities.document_formatting then
-          buf_set_keymap("n", "<leader>F", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-        elseif client.resolved_capabilities.document_range_formatting then
-          buf_set_keymap("n", "<leader>F", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-        end
-
-        -- Set autocommands conditional on server_capabilities
-        if client.resolved_capabilities.document_highlight then
-          vim.api.nvim_exec([[
-            hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
-            hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
-            hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
-            augroup lsp_document_highlight
-              autocmd! * <buffer>
-              autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-              autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-            augroup END
-          ]], false)
-        end
-      end
-
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities.textDocument.completion.completionItem.snippetSupport = true
-      capabilities.textDocument.completion.completionItem.resolveSupport = {
-          properties = {
-              'documentation',
-              'detail',
-              'additionalTextEdits',
-          }
-      }
-
-      -- Use a loop to conveniently both setup defined servers
-      -- and map buffer local keybindings when the language server attaches
-      local servers = {
-          "gopls",
-          "bashls",
-          "cmake",
-          "rust_analyzer",
-      }
-      for _, lsp in ipairs(servers) do
-        nvim_lsp[lsp].setup { capabilities = capabilities, on_attach = on_attach }
-      end
-
-      require'compe'.setup {
-          enabled = true;
-          autocomplete = true;
-          debug = false;
-          min_length = 1;
-          preselect = 'enable';
-          throttle_time = 80;
-          source_timeout = 200;
-          incomplete_delay = 400;
-          max_abbr_width = 100;
-          max_kind_width = 100;
-          max_menu_width = 100;
-          documentation = true;
-
-          source = {
-              path = true;
-              buffer = true;
-              calc = true;
-              nvim_lsp = true;
-              nvim_lua = true;
-              vsnip = false;
-              ultisnips = true;
-          };
-      }
-      EOF
-
-      inoremap <silent><expr> <C-k>     compe#complete()
-      inoremap <silent><expr> <CR>      compe#confirm('<CR>')
-      inoremap <silent><expr> <C-e>     compe#close('<C-e>')
-      inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
-      inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => Tabular
@@ -427,10 +316,24 @@ linkerd = stdenv.mkDerivation {
       let g:syntastic_check_on_open = 1
       let g:syntastic_check_on_wq = 0
 
+      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      " => CTRL-P
+      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      " let g:ctrlp_max_height = 20
+      " let g:ctrlp_custom_ignore = 'node_modules\|^\.DS_Store\|^\.git\|^\.coffee'
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => General
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      " Sets how many lines of history VIM has to remember
+      set history=500
+
+      " Enable filetype plugins
+      filetype plugin on
+      filetype indent on
+
+      " Set to auto read when a file is changed from the outside
+      set autoread
 
       " With a map leader it's possible to do extra key combinations
       " like <leader>w saves the current file
@@ -445,6 +348,11 @@ linkerd = stdenv.mkDerivation {
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => VIM user interface
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      " Start scrolling three lines before the horizontal window border
+      set scrolloff=3
+      " Enhance command-line completion
+      set wildmenu
+
       " Ignore compiled files
       set wildignore=*.o,*~,*.pyc
       if has("win16") || has("win32")
@@ -453,12 +361,17 @@ linkerd = stdenv.mkDerivation {
           set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
       endif
 
+      " Show the cursor position
+      set ruler
+
       " A buffer becomes hidden when it is abandoned
       set hidden
 
       " Use the OS clipboard by default
       set clipboard+=unnamedplus
 
+      " Allow backspace in insert mode
+      set backspace=indent,eol,start
       set whichwrap+=<,>,h,l
 
       " Ignore case of searches
@@ -467,11 +380,36 @@ linkerd = stdenv.mkDerivation {
       " When searching try to be smart about cases
       set smartcase
 
+      " Highlight searches
+      set hlsearch
+
+      " Makes search act like search in modern browsers
+      set incsearch
+
       " Don't redraw while executing macros (good performance config)
       set lazyredraw
 
+      " For regular expressions turn magic on
+      set magic
+
       " Show matching brackets when text indicator is over them
       set showmatch
+      " How many tenths of a second to blink when matching brackets
+      set mat=2
+
+      " No annoying sound on errors
+      set noerrorbells
+      set novisualbell
+      set t_vb=
+      set tm=500
+
+      " Properly disable sound on errors on MacVim
+      if has("gui_macvim")
+          autocmd GUIEnter * set vb t_vb=
+      endif
+
+      " Add a bit extra margin to the left
+      set foldcolumn=1
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => Colors and Fonts
@@ -485,18 +423,35 @@ linkerd = stdenv.mkDerivation {
       endif
 
       try
-          colorscheme gruvbox
+          colorscheme pablo
       catch
       endtry
 
       set background=dark
+
+      " Set extra options when running in GUI mode
+      if has("gui_running")
+          set guioptions-=T
+          set guioptions-=e
+          set t_Co=256
+          set guitablabel=%M\ %t
+      endif
+
+      " Highlight ColorColumn ctermbg=magenta
+      " hi Pmenu guifg=fg guibg=#e0b0e0
+
+      " Set utf8 as standard encoding and en_US as the standard language
+      set encoding=utf8
+
+      " Use Unix as the standard file type
+      set ffs=unix,dos,mac
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => Files, backups and undo
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " Centralize backups, swapfiles and undo history
       set backupdir=~/.config/nvim/backups
-      set noswapfile
+      set directory=~/.config/nvim/swaps
       if exists("&undodir")
           set undodir=~/.config/nvim/undo
           set undofile
@@ -512,6 +467,9 @@ linkerd = stdenv.mkDerivation {
       " Translate tabs to spaces
       set expandtab
 
+      " Be smart when using tabs ;)
+      set smarttab
+
       " Make tabs as wide as four spaces
       set tabstop=4
       " Make indentation as four space
@@ -520,6 +478,10 @@ linkerd = stdenv.mkDerivation {
       " Linebreak on 500 characters
       set lbr
       set tw=80
+
+      set ai "Auto indent
+      set si "Smart indent
+      set wrap "Wrap lines
 
       """"""""""""""""""""""""""""""
       " => Visual mode related
@@ -638,19 +600,81 @@ linkerd = stdenv.mkDerivation {
       """"""""""""""""""""""""""""""
       " => Shell section
       """"""""""""""""""""""""""""""
-      set termguicolors
+      if exists('$TMUX')
+          if has('nvim')
+              set termguicolors
+          else
+              set term=screen-256color
+          endif
+      endif
+
+      " If you use vim inside tmux, see https://github.com/vim/vim/issues/993
+      " set Vim-specific sequences for RGB colors
+      let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+      let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+
+      " Automatic commands
+      if has("autocmd")
+          " Enable file type detection
+          filetype on
+          " Treat .json files as .js
+          autocmd BufNewFile,BufRead *.json setfiletype json syntax=javascript
+          " Treat .md files as Markdown
+          autocmd BufNewFile,BufRead *.md setlocal filetype=markdown
+          " Treat .html files as php
+          " autocmd BufNewFile,BufRead *.html setlocal filetype=php
+          " Enable emmet for ...
+          " autocmd FileType html,css,php,go EmmetInstall
+          " Shortcut to run python file
+          autocmd FileType python nnoremap <buffer> <F9> :w<CR> :exec '!python3' shellescape(@%, 1)<CR>
+          " Shortcut to run go
+          autocmd FileType go nmap <leader>r <Plug>(go-run)
+          " Use LSP omni-completion in Rust files
+          autocmd BufRead,Filetype rust setlocal omnifunc=v:lua.vim.lsp.omnifunc
+          " Sign updated when save a file
+          autocmd BufWritePost * GitGutter
+          " Get the 2-space YAML as the default when hit carriage return after the colon
+          autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+      endif
+
 
       " Add the g flag to search/replace by default
       set gdefault
+      " Don’t add empty newlines at the end of files
+      set noeol
       " Respect modeline in files
       set modeline
       set modelines=4
+      " Enable per-directory .vimrc files and disable unsafe commands in them
+      set exrc
+      set secure
+      " Enable line numbers
+      set number
       " Highlight current line
       set cursorline
+      " Show “invisible” characters
+      set lcs=tab:▸\ ,trail:·,nbsp:_
+      set list
+      " Enable mouse in all modes
+      set ttymouse=xterm2
       set mouse=a
+      " Don’t reset cursor to start of line when moving around.
+      " set nostartofline
+      " Don’t show the intro message when starting Vim
+      " set shortmess=atI
+      " Show the current mode
+      set showmode
+      " Show the filename in the window titlebar
+      set title
+      " Show the (partial) command as it’s being typed
+      set showcmd
+      " Use relative line numbers
+      if exists("&relativenumber")
+          set relativenumber
+          au BufReadPost * set relativenumber
+      endif
 
-      " nvim-compe required
-      set completeopt=menuone,noselect
+      set completeopt=longest,menuone
 
       " Add spaces after comment delimiters by default
       let g:NERDSpaceDelims = 1
@@ -666,6 +690,11 @@ linkerd = stdenv.mkDerivation {
       " let g:UltiSnipsJumpBackwardTrigger = "<c-z>"
       " If you want :UltiSnipsEdit to split your window.
       let g:UltiSnipsEditSplit="vertical"
+
+      " Enable HTML/CSS syntax highlighting in js file
+      let g:javascript_enable_domhtmlcss = 1
+      let g:javascript_plugin_jsdoc = 1
+
 
       noremap <C-p> :Files<CR>
       noremap <leader>b :Buffers<CR>
@@ -698,7 +727,7 @@ linkerd = stdenv.mkDerivation {
       nnoremap <leader>a :RG<space>
       noremap <leader>l  : Tab/
       " nnoremap <C-Tab>   : <C-6><CR>
-      nnoremap <leader>gs :Git<CR>
+      nnoremap <leader>gs :Gstatus<CR>
       nnoremap <leader>gc :Git commit<CR>
       nnoremap <leader>gp :Git push origin HEAD<CR>
       nnoremap <leader>gr :Git rebase<CR>
@@ -755,6 +784,14 @@ linkerd = stdenv.mkDerivation {
           endfor
           return join(map(values(buffer_numbers), 'fnameescape(v:val)'))
       endfunction
+
+      " Emmet configuration
+      " only enable in insert mode.
+      let g:user_emmet_mode = 'i'
+      " disable global install
+      let g:user_emmet_install_global = 0
+      " redefine emmet trigger key
+      let g:user_emmet_leader_key = '<C-z>'
 
       " Go configuration
       let g:go_fmt_command = "goimports"
