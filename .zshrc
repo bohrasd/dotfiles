@@ -162,7 +162,6 @@ eval $(navi widget zsh)
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 export NIX_PATH=$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH
 
-cowsay -f tux $(/usr/bin/whatis $(ls /usr/share/man/man1 | shuf -n 1 | cut -d. -f1) 2>/dev/null)
-
 export FLYCTL_INSTALL="$HOME/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
+cowsay -f $(cowsay -l | tail -n +2 | xargs -n1 | shuf -n 1) $(/usr/bin/whatis $(ls /usr/share/man/man1 | shuf -n 1 | cut -d. -f1) 2>/dev/null)

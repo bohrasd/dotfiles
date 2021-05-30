@@ -95,6 +95,8 @@ linkerd = stdenv.mkDerivation {
     pkgs.translate-shell
     pkgs.clipman
     pkgs.p7zip
+    pkgs.inetutils
+    pkgs.nmap
     linkerd
   ];
 
