@@ -51,6 +51,7 @@ linkerd = stdenv.mkDerivation {
       QT_IM_MODULE = "fcitx";
       XMODIFIERS = "@im=fcitx";
       WAYLAND_DISPLAY = "wayland-1";
+      KITTY_ENABLE_WAYLAND = 1;
   };
 
   home.packages = [
@@ -60,6 +61,7 @@ linkerd = stdenv.mkDerivation {
     pkgs.ldns
     pkgs.glab
     pkgs.neofetch
+    pkgs.aria2
     pkgs.st
     pkgs.go
     pkgs.ginkgo
@@ -80,13 +82,13 @@ linkerd = stdenv.mkDerivation {
     pkgs.libcap_manpages
     pkgs.gdb
     pkgs.gcc
-    pkgs.cmake
     pkgs.nodePackages.bash-language-server
     pkgs.bat
     pkgs.netcat
     pkgs.ncdu
     pkgs.step-cli
     pkgs.step-ca
+    pkgs.swaks
     pkgs.kubernetes-helm
     pkgs.erlang
     pkgs.cowsay
@@ -213,7 +215,6 @@ linkerd = stdenv.mkDerivation {
       CCP_CLI             = "kubectl";
       GOPATH              = "$HOME/go";
       GO111MODULE         = "auto";
-      FZF_DEFAULT_COMMAND = "fd --type f";
       GITLAB_HOST         = "lqbyun.com";
       GIT_SSH             = "/usr/bin/ssh";
     };
@@ -270,7 +271,6 @@ linkerd = stdenv.mkDerivation {
       vim-snippets
       ultisnips
       vim-visual-multi
-      undotree
       vim-obsession
       fzf
       fzf-vim
@@ -344,7 +344,6 @@ linkerd = stdenv.mkDerivation {
       local servers = {
           "gopls",
           "bashls",
-          "cmake",
           "rust_analyzer",
       }
       for _, lsp in ipairs(servers) do
@@ -722,8 +721,6 @@ linkerd = stdenv.mkDerivation {
       nnoremap <silent> <Leader>< :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
       nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
       nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
-      " Undotree
-      nnoremap <leader>u :UndotreeToggle<cr>
 
       com Wdt windo diffthis
       com Wdo diffoff!
@@ -765,8 +762,14 @@ linkerd = stdenv.mkDerivation {
     '';
   };
 
-  programs.fzf.enable = true;
-  programs.fzf.enableZshIntegration = true;
+  programs.fzf = {
+      enable = true;
+      enableZshIntegration = true;
+      defaultCommand = "fd --type f --hidden";
+      fileWidgetCommand = "fd --type f --hidden --exclude \".git\" . \"$1\"";
+      changeDirWidgetCommand = "fd --type d --hidden --exclude \".git\" . \"$1\"";
+      tmux.enableShellIntegration = true;
+  };
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
