@@ -55,27 +55,23 @@ linkerd = stdenv.mkDerivation {
 
   home.packages = [
     pkgs.tree
-    pkgs.bubblewrap
     pkgs.wl-clipboard
-    pkgs.ldns
     pkgs.glab
     pkgs.neofetch
     pkgs.aria2
-    pkgs.st
     pkgs.go
     pkgs.gotools
     pkgs.goimports
     pkgs.gopls
     pkgs.ginkgo
-    pkgs.gh
     pkgs.subversion
     pkgs.fortune
     pkgs.navi
     pkgs.ripgrep
+    pkgs.fd
     pkgs.kubectl
     pkgs.krew
     pkgs.k9s
-    pkgs.github-release
     pkgs.du-dust
     pkgs.ranger
     pkgs.jsonnet
