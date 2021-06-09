@@ -9,15 +9,14 @@ let
 linkerd = stdenv.mkDerivation {
   name = "linkerd";
   phases = [ "installPhase" ];
-  nativeBuildInputs = [
-    autoPatchelfHook
-  ];
   src = fetchurl {
-    url = "https://github.com/linkerd/linkerd2/releases/download/stable-2.9.2/linkerd2-cli-stable-2.9.2-linux-amd64";
-    sha256 = "67e51106600fe48315659e9e3261efd0169e6bb229ceb8d96af0eabd159624ef";
+    url = "https://github.com/linkerd/linkerd2/releases/download/stable-2.9.5/linkerd2-cli-stable-2.9.5-linux-amd64";
+    sha256 = "dd028bbfc238d2d8e916944f995d08725a6b311527be65d0919827f6c85fb504";
   };
   installPhase = ''
-    cp -r ${src} $out
+    mkdir -p $out/bin
+    cp -v $src $out/bin/linkerd
+    chmod +x $out/bin/linkerd
   '';
 }; in
 {
@@ -64,6 +63,9 @@ linkerd = stdenv.mkDerivation {
     pkgs.aria2
     pkgs.st
     pkgs.go
+    pkgs.gotools
+    pkgs.goimports
+    pkgs.gopls
     pkgs.ginkgo
     pkgs.gh
     pkgs.subversion
