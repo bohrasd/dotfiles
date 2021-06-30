@@ -45,15 +45,12 @@ linkerd = stdenv.mkDerivation {
     "$HOME/.linkerd2/bin/"
   ];
   home.sessionVariables = {
-      INPUT_METHOD = "fcitx";
-      GTK_IM_MODULE = "fcitx";
-      QT_IM_MODULE = "fcitx";
-      XMODIFIERS = "@im=fcitx";
-      WAYLAND_DISPLAY = "wayland-1";
       KITTY_ENABLE_WAYLAND = 1;
+      WAYLAND_DISPLAY   = "wayland-0";
   };
-
+  fonts.fontconfig.enable = true;
   home.packages = [
+    (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "DroidSansMono" ]; })
     pkgs.tree
     pkgs.bubblewrap
     pkgs.wl-clipboard
@@ -66,6 +63,7 @@ linkerd = stdenv.mkDerivation {
     pkgs.gotools
     pkgs.goimports
     pkgs.gopls
+    pkgs.delve
     pkgs.ginkgo
     pkgs.gh
     pkgs.subversion
@@ -84,6 +82,7 @@ linkerd = stdenv.mkDerivation {
     pkgs.libcap_manpages
     pkgs.gdb
     pkgs.gcc
+    pkgs.strace
     pkgs.nodePackages.bash-language-server
     pkgs.bat
     pkgs.netcat
@@ -109,9 +108,25 @@ linkerd = stdenv.mkDerivation {
       enable = true;
       settings = {
           left_meters = ["AllCPUs4" "Memory" "Swap"];
-          fields = [ "PID" "USER" "PRIORITY" "NICE" "OOM" "M_SIZE" "M_RESIDENT" "M_SHARE" "STATE" "PERCENT_CPU"
-              "PERCENT_MEM" "TIME" "COMM" ];
-          vimMode = true;
+          left_meter_modes = [1 1 1];
+          right_meters = ["Tasks" "LoadAverage" "Uptime" "Systemd" ];
+          right_meter_modes = [2 2 2 2];
+          fields = with config.lib.htop.fields; [
+           PID
+           USER
+           PRIORITY
+           NICE
+           OOM
+           M_SIZE
+           M_RESIDENT
+           M_SHARE
+           STATE
+           PERCENT_CPU
+           PERCENT_MEM
+           TIME
+           COMM
+          ];
+          vim_mode = true;
       };
   };
 
@@ -127,20 +142,14 @@ linkerd = stdenv.mkDerivation {
       plugins = [
         tmuxPlugins.sensible
         tmuxPlugins.yank
+        {
+          plugin = tmuxPlugins.power-theme;
+          extraConfig = ''
+            set -g @tmux_power_theme 'snow'
+          '';
+        }
       ];
       extraConfig = ''
-        set -g message-command-style "fg=#8ea6d6,bg=#323f4f"
-        set -g status-right-style "none"
-        set -g pane-active-border-style "fg=#a796dd"
-        set -g status-style "none,bg=#323f4f"
-        set -g message-style "fg=#8ea6d6,bg=#3d4c5f"
-        set -g pane-border-style "fg=#323f4f"
-        set -g status-right-length "100"
-        set -g status-left-length "100"
-        setw -g window-status-activity-style "none"
-        setw -g window-status-separator " | "
-        setw -g window-status-style "none,fg=#a796dd,bg=#3d4c5f"
-
         # Enable RGB colour if running in xterm(1)
         set-option -sa terminal-overrides ",tmux-256color:RGB"
 
@@ -207,18 +216,18 @@ linkerd = stdenv.mkDerivation {
         dl    = "$HOME/Downloads";
     };
     sessionVariables = {
-      WORDCHARS           = "";
-      PGOUSER             = "$HOME/.pgo/pgo/pgouser";
-      PGO_CA_CERT         = "$HOME/.pgo/pgo/client.crt";
-      PGO_CLIENT_CERT     = "$HOME/.pgo/pgo/client.crt";
-      PGO_CLIENT_KEY      = "$HOME/.pgo/pgo/client.key";
-      PGO_APISERVER_URL   = "https://127.0.0.1:8443";
-      PGO_NAMESPACE       = "pgo";
-      CCP_CLI             = "kubectl";
-      GOPATH              = "$HOME/go";
-      GO111MODULE         = "auto";
-      GITLAB_HOST         = "lqbyun.com";
-      GIT_SSH             = "/usr/bin/ssh";
+      WORDCHARS         = "";
+      PGOUSER           = "$HOME/.pgo/pgo/pgouser";
+      PGO_CA_CERT       = "$HOME/.pgo/pgo/client.crt";
+      PGO_CLIENT_CERT   = "$HOME/.pgo/pgo/client.crt";
+      PGO_CLIENT_KEY    = "$HOME/.pgo/pgo/client.key";
+      PGO_APISERVER_URL = "https://127.0.0.1:8443";
+      PGO_NAMESPACE     = "pgo";
+      CCP_CLI           = "kubectl";
+      GOPATH            = "$HOME/go";
+      GO111MODULE       = "auto";
+      GITLAB_HOST       = "lqbyun.com";
+      GIT_SSH           = "/usr/bin/ssh";
     };
 
     shellAliases = {
@@ -259,21 +268,17 @@ linkerd = stdenv.mkDerivation {
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
       nerdtree
-      gruvbox
+      papercolor-theme
       vim-surround
       vim-airline
       nerdcommenter
-      vim-easymotion
-      vim-gitgutter
-      vim-fugitive
-      syntastic
+      vim-signify
       vim-go
       nvim-lspconfig
       nvim-compe
       vim-snippets
       ultisnips
       vim-visual-multi
-      vim-obsession
       fzf
       fzf-vim
       tabular
@@ -487,11 +492,6 @@ linkerd = stdenv.mkDerivation {
           set t_Co=256
       endif
 
-      try
-          colorscheme gruvbox
-      catch
-      endtry
-
       set background=dark
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -655,13 +655,6 @@ linkerd = stdenv.mkDerivation {
       " nvim-compe required
       set completeopt=menuone,noselect
 
-      " Add spaces after comment delimiters by default
-      let g:NERDSpaceDelims = 1
-      " Use compact syntax for prettified multi-line comments
-      let g:NERDCompactSexyComs = 1
-      " Align line-wise comment delimiters flush left instead of following code indentation
-      let g:NERDDefaultAlign = 'left'
-
       " ultisnips config
       " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
       let g:UltiSnipsExpandTrigger = "<C-j>"
@@ -700,12 +693,6 @@ linkerd = stdenv.mkDerivation {
       noremap \ ,
       nnoremap <leader>a :RG<space>
       noremap <leader>l  : Tab/
-      " nnoremap <C-Tab>   : <C-6><CR>
-      nnoremap <leader>gs :Git<CR>
-      nnoremap <leader>gc :Git commit<CR>
-      nnoremap <leader>gp :Git push origin HEAD<CR>
-      nnoremap <leader>gr :Git rebase<CR>
-      nnoremap <leader>gl :Git pull<CR>
       " Switch quickfix
       nnoremap [q :cprevious<CR>
       nnoremap ]q :cnext<CR>
@@ -761,6 +748,10 @@ linkerd = stdenv.mkDerivation {
       let g:go_fmt_command = "goimports"
       let g:go_list_type = "quickfix"
       let g:go_term_mode = "split"
+      let g:go_gopls_enabled = 0
+      let g:go_def_mapping_enabled = 0
+
+      colorscheme PaperColor
     '';
   };
 
