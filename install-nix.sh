@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 #lxc config set penguin security.nesting true
-#sh <(curl -L https://nixos.org/nix/install) --no-daemon
+sh <(curl -L https://nixos.org/nix/install) --no-daemon
 . $HOME/.nix-profile/etc/profile.d/nix.sh
 nix-channel --add https://github.com/rycee/home-manager/archive/master.tar.gz home-manager
 nix-channel --update
