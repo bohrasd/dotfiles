@@ -263,7 +263,6 @@ linkerd = stdenv.mkDerivation {
     viAlias = true;
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
-      nerdtree
       papercolor-theme
       vim-surround
       vim-airline
@@ -431,6 +430,16 @@ linkerd = stdenv.mkDerivation {
       let g:syntastic_check_on_open = 1
       let g:syntastic_check_on_wq = 0
 
+      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      " => netrw
+      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      let g:netrw_banner = 0
+      let g:netrw_liststyle = 3
+      let g:netrw_browse_split = 4
+      let g:netrw_altv = 1
+      let g:netrw_winsize = 25
+
+      au FileType netrw setl bufhidden=wipe
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => General
@@ -670,8 +679,6 @@ linkerd = stdenv.mkDerivation {
           endif
       endfunction
       noremap <leader>m :History<CR>
-      noremap <leader>d :NERDTreeToggle<CR>
-      noremap <leader>f :NERDTreeFind<CR>
       " noremap <bs> :tabprevious<CR>
       " noremap <C-l> :tabnext<CR>
       " brackets input
@@ -687,6 +694,7 @@ linkerd = stdenv.mkDerivation {
       noremap <silent> <leader>tw :set invwrap<CR>:set wrap?<CR>
       " set \ to ,
       noremap \ ,
+      noremap <leader>d :Lexplore<CR>
       nnoremap <leader>a :RG<space>
       noremap <leader>l  : Tab/
       " Switch quickfix
