@@ -18,7 +18,60 @@ linkerd = stdenv.mkDerivation {
     cp -v $src $out/bin/linkerd
     chmod +x $out/bin/linkerd
   '';
-}; in
+};
+qshell = stdenv.mkDerivation {
+  name = "qshell";
+  phases = [ "installPhase" ];
+  src = fetchurl {
+    url = "https://devtools.qiniu.com/qshell-v2.6.2-linux-amd64.tar.gz";
+    sha256 = "11mhd62d7kvwpwf2xk2n4c4f38pc1y7k5777wkcqym0ryvc9g855";
+  };
+  installPhase = ''
+    tar xzf $src
+    mkdir -p $out/bin
+    cp -v ./qshell $out/bin/qshell
+  '';
+};
+aliyun = stdenv.mkDerivation {
+  name = "aliyun";
+  phases = [ "installPhase" ];
+  src = fetchurl {
+    url = "https://github.com/aliyun/aliyun-cli/releases/download/v3.0.85/aliyun-cli-linux-3.0.85-amd64.tgz";
+    sha256 = "1gcfw1w6q253yvdfjn5psqis7gg4z8wwc4k86bjzml7v0infbqc0";
+  };
+  installPhase = ''
+    tar xzf $src
+    mkdir -p $out/bin
+    cp -v ./aliyun $out/bin/aliyun
+  '';
+};
+argocd = stdenv.mkDerivation {
+  name = "argocd";
+  phases = [ "installPhase" ];
+  src = fetchurl {
+    url = "https://github.com/argoproj/argo-cd/releases/download/v2.0.5/argocd-util-linux-amd64";
+  };
+  installPhase = ''
+    mkdir -p $out/bin
+    cp -v $src $out/bin/argocd
+    chmod +x $out/bin/argocd
+  '';
+};
+
+dyff = stdenv.mkDerivation {
+  name = "dyff";
+  phases = [ "installPhase" ];
+  src = fetchurl {
+    url = "https://github.com/homeport/dyff/releases/download/v1.4.3/dyff_1.4.3_linux_amd64.tar.gz";
+    sha256 = "35d12bdfcb709f5d82e5f458a958ec87c77674e406279659e7e2ded4486cdfe6";
+  };
+  installPhase = ''
+    tar xzf $src
+    mkdir -p $out/bin
+    cp -v ./dyff $out/bin/dyff
+  '';
+};
+in
 {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -96,7 +149,15 @@ linkerd = stdenv.mkDerivation {
     pkgs.p7zip
     pkgs.inetutils
     pkgs.nmap
+    pkgs.yq
+    pkgs.flyctl
+    pkgs.vault
+    pkgs.wrk
     linkerd
+    qshell
+    aliyun
+    argocd
+    dyff
   ];
 
   programs.jq.enable = true;
@@ -267,6 +328,8 @@ linkerd = stdenv.mkDerivation {
       vim-surround
       vim-airline
       nerdcommenter
+      nerdtree
+      neomake
       vim-signify
       vim-go
       nvim-lspconfig
@@ -402,6 +465,7 @@ linkerd = stdenv.mkDerivation {
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => fzf.vim
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      let $FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow -E .git -E .svn'
       command! -bang -nargs=* Rg
         \ call fzf#vim#grep(
         \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
@@ -423,21 +487,24 @@ linkerd = stdenv.mkDerivation {
       " let g:rustfmt_autosave = 1
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      " => syntastic
+      " => neomake
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      let g:syntastic_always_populate_loc_list = 1
-      let g:syntastic_auto_loc_list = 0
-      let g:syntastic_check_on_open = 1
-      let g:syntastic_check_on_wq = 0
+      " When writing a buffer (no delay).
+      call neomake#configure#automake('w')
+      " When writing a buffer (no delay), and on normal mode changes (after 750ms).
+      call neomake#configure#automake('nw', 750)
+      " When reading a buffer (after 1s), and when writing (no delay).
+      call neomake#configure#automake('rw', 1000)
+      " Full config: when writing or reading a buffer, and on changes in insert and
+      " normal mode (after 500ms; no delay when writing).
+      call neomake#configure#automake('nrwi', 500)
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => netrw
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      let g:netrw_banner = 0
       let g:netrw_liststyle = 3
       let g:netrw_browse_split = 4
       let g:netrw_altv = 1
-      let g:netrw_winsize = 25
 
       au FileType netrw setl bufhidden=wipe
 
@@ -454,6 +521,9 @@ linkerd = stdenv.mkDerivation {
 
       " Prevent auto split line
       set formatoptions-=tc
+
+      noremap <leader>d :NERDTreeToggle<CR>
+      noremap <leader>f :NERDTreeFind<CR>
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => VIM user interface
@@ -694,7 +764,6 @@ linkerd = stdenv.mkDerivation {
       noremap <silent> <leader>tw :set invwrap<CR>:set wrap?<CR>
       " set \ to ,
       noremap \ ,
-      noremap <leader>d :Lexplore<CR>
       nnoremap <leader>a :RG<space>
       noremap <leader>l  : Tab/
       " Switch quickfix
@@ -762,9 +831,9 @@ linkerd = stdenv.mkDerivation {
   programs.fzf = {
       enable = true;
       enableZshIntegration = true;
-      defaultCommand = "fd --type f --hidden";
-      fileWidgetCommand = "fd --type f --hidden --exclude \".git\" . \"$1\"";
-      changeDirWidgetCommand = "fd --type d --hidden --exclude \".git\" . \"$1\"";
+      defaultCommand = "fd --type f --hidden -E .git -E .svn ";
+      fileWidgetCommand = "fd --type f --hidden -E .git -E .svn . \"$1\"";
+      changeDirWidgetCommand = "fd --type d --hidden -E .git -E .svn . \"$1\"";
       tmux.enableShellIntegration = true;
   };
 
