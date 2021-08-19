@@ -167,7 +167,6 @@ in
     pkgs.vault
     pkgs.wrk
     pkgs.zsh-completions
-    pkgs.xpra
     linkerd
     qshell
     qsuits
@@ -175,6 +174,7 @@ in
     argocd
     dyff
   ]  ++ (if pkgs.stdenv.isLinux then [
+    pkgs.xpra
     pkgs.clipman
     pkgs.strace
     pkgs.manpages
@@ -590,9 +590,6 @@ in
 
       " A buffer becomes hidden when it is abandoned
       set hidden
-
-      " Use the OS clipboard by default
-      set clipboard+=unnamedplus
 
       set whichwrap+=<,>,h,l
 
