@@ -8,7 +8,6 @@ with autoPatchelfHook;
 let
 linkerd = stdenv.mkDerivation {
   name = "linkerd";
-  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://github.com/linkerd/linkerd2/releases/download/stable-2.9.5/linkerd2-cli-stable-2.9.5-linux-amd64";
@@ -22,7 +21,6 @@ linkerd = stdenv.mkDerivation {
 };
 qsuits = stdenv.mkDerivation {
   name = "qsuits";
-  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://devtools.qiniu.com/qsuits_linux_amd64";
@@ -36,7 +34,6 @@ qsuits = stdenv.mkDerivation {
 };
 qshell = stdenv.mkDerivation {
   name = "qshell";
-  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://devtools.qiniu.com/qshell-v2.6.2-linux-amd64.tar.gz";
@@ -50,7 +47,6 @@ qshell = stdenv.mkDerivation {
 };
 aliyun = stdenv.mkDerivation {
   name = "aliyun";
-  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://github.com/aliyun/aliyun-cli/releases/download/v3.0.85/aliyun-cli-linux-3.0.85-amd64.tgz";
@@ -64,7 +60,6 @@ aliyun = stdenv.mkDerivation {
 };
 argocd = stdenv.mkDerivation {
   name = "argocd";
-  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://github.com/argoproj/argo-cd/releases/download/v2.0.5/argocd-util-linux-amd64";
@@ -78,7 +73,6 @@ argocd = stdenv.mkDerivation {
 
 dyff = stdenv.mkDerivation {
   name = "dyff";
-  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://github.com/homeport/dyff/releases/download/v1.4.3/dyff_1.4.3_linux_amd64.tar.gz";
@@ -167,12 +161,6 @@ in
     pkgs.vault
     pkgs.wrk
     pkgs.zsh-completions
-    linkerd
-    qshell
-    qsuits
-    aliyun
-    argocd
-    dyff
   ]  ++ (if pkgs.stdenv.isLinux then [
     pkgs.xpra
     pkgs.clipman
@@ -181,6 +169,12 @@ in
     pkgs.libcap_manpages
     pkgs.wl-clipboard
     (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "DroidSansMono" ]; })
+    linkerd
+    qshell
+    qsuits
+    aliyun
+    argocd
+    dyff
   ] else [
     pkgs.coreutils
   ]);
