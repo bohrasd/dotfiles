@@ -53,11 +53,6 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#777777"
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
 
-autoload -Uz compinit
-autoload bashcompinit
-compinit
-bashcompinit
-
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 

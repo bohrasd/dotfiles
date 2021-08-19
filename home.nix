@@ -8,6 +8,7 @@ with autoPatchelfHook;
 let
 linkerd = stdenv.mkDerivation {
   name = "linkerd";
+  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://github.com/linkerd/linkerd2/releases/download/stable-2.9.5/linkerd2-cli-stable-2.9.5-linux-amd64";
@@ -19,8 +20,23 @@ linkerd = stdenv.mkDerivation {
     chmod +x $out/bin/linkerd
   '';
 };
+qsuits = stdenv.mkDerivation {
+  name = "qsuits";
+  system = "x86_64-linux";
+  phases = [ "installPhase" ];
+  src = fetchurl {
+    url = "https://devtools.qiniu.com/qsuits_linux_amd64";
+    sha256 = "0vfkvd419qspgjfb8l86a281af3xr4k8skz52vypzq4xcsnynq5f";
+  };
+  installPhase = ''
+    mkdir -p $out/bin
+    cp -v $src $out/bin/qsuits
+    chmod +x $out/bin/qsuits
+  '';
+};
 qshell = stdenv.mkDerivation {
   name = "qshell";
+  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://devtools.qiniu.com/qshell-v2.6.2-linux-amd64.tar.gz";
@@ -34,6 +50,7 @@ qshell = stdenv.mkDerivation {
 };
 aliyun = stdenv.mkDerivation {
   name = "aliyun";
+  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://github.com/aliyun/aliyun-cli/releases/download/v3.0.85/aliyun-cli-linux-3.0.85-amd64.tgz";
@@ -47,6 +64,7 @@ aliyun = stdenv.mkDerivation {
 };
 argocd = stdenv.mkDerivation {
   name = "argocd";
+  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://github.com/argoproj/argo-cd/releases/download/v2.0.5/argocd-util-linux-amd64";
@@ -60,6 +78,7 @@ argocd = stdenv.mkDerivation {
 
 dyff = stdenv.mkDerivation {
   name = "dyff";
+  system = "x86_64-linux";
   phases = [ "installPhase" ];
   src = fetchurl {
     url = "https://github.com/homeport/dyff/releases/download/v1.4.3/dyff_1.4.3_linux_amd64.tar.gz";
@@ -78,8 +97,8 @@ in
 
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
-  home.username = "bohrasd";
-  home.homeDirectory = "/home/bohrasd";
+  home.username = "$USER";
+  home.homeDirectory = (if pkgs.stdenv.isLinux then "/home/$USER" else "/Users/$USER");
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
@@ -101,11 +120,9 @@ in
       KITTY_ENABLE_WAYLAND = 1;
       WAYLAND_DISPLAY   = "wayland-0";
   };
-  fonts.fontconfig.enable = true;
+  fonts.fontconfig.enable = pkgs.stdenv.isLinux;
   home.packages = [
-    (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "DroidSansMono" ]; })
     pkgs.tree
-    pkgs.wl-clipboard
     pkgs.glab
     pkgs.neofetch
     pkgs.aria2
@@ -127,11 +144,8 @@ in
     pkgs.ranger
     pkgs.jsonnet
     pkgs.jsonnet-bundler
-    pkgs.manpages
-    pkgs.libcap_manpages
     pkgs.gdb
     pkgs.gcc
-    pkgs.strace
     pkgs.nodePackages.bash-language-server
     pkgs.bat
     pkgs.netcat
@@ -145,7 +159,6 @@ in
     pkgs.wireshark-cli
     pkgs.nmap
     pkgs.translate-shell
-    pkgs.clipman
     pkgs.p7zip
     pkgs.inetutils
     pkgs.nmap
@@ -153,12 +166,24 @@ in
     pkgs.flyctl
     pkgs.vault
     pkgs.wrk
+    pkgs.zsh-completions
+    pkgs.xpra
     linkerd
     qshell
+    qsuits
     aliyun
     argocd
     dyff
-  ];
+  ]  ++ (if pkgs.stdenv.isLinux then [
+    pkgs.clipman
+    pkgs.strace
+    pkgs.manpages
+    pkgs.libcap_manpages
+    pkgs.wl-clipboard
+    (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "DroidSansMono" ]; })
+  ] else [
+    pkgs.coreutils
+  ]);
 
   programs.jq.enable = true;
   programs.htop = {
@@ -265,6 +290,7 @@ in
     enable = true;
     enableCompletion = true;
     enableAutosuggestions = true;
+    enableSyntaxHighlighting = true;
     defaultKeymap = "viins";
     dotDir = ".dotfiles/zsh";
     dirHashes = {
@@ -285,6 +311,7 @@ in
       GO111MODULE       = "auto";
       GITLAB_HOST       = "lqbyun.com";
       GIT_SSH           = "/usr/bin/ssh";
+      VAULT_ADDR = "https://billowing-bird-9580.fly.dev";
     };
 
     shellAliases = {
@@ -295,17 +322,37 @@ in
        expireDuplicatesFirst = true;
        extended = true;
        ignoreDups = true;
+       ignorePatterns = [
+        "rm *"
+        "cd *"
+        "ls *"
+        "ll *"
+        "vim? *"
+       ];
        ignoreSpace = true;
        path = "$HOME/.zsh_history";
     };
+    #prezto = {
+    #    enable = true;
+    #    pmodules = ["environment" "terminal" "editor" "directory" "spectrum" "utility" "completion" "prompt" "dnf" "docker" "yum" "gnu-utility" "git"];
+    #};
+    initExtraBeforeCompInit = ''
+      fpath=(~/.dotfiles/zsh/my-site-functions $fpath)
+    '';
     initExtra = ''
       source ~/.dotfiles/.zshrc
     '';
   };
 
+  programs.fish = {
+    enable = true;
+    plugins = [];
+  };
+
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
+    enableFishIntegration = true;
     settings = {
       kubernetes = {
         disabled = false;
@@ -319,17 +366,35 @@ in
 
   programs.neovim = {
     enable = true;
-    package = pkgs.neovim-nightly;
+    #package = pkgs.neovim-nightly;
     withPython3 = true;
     viAlias = true;
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
       papercolor-theme
       vim-surround
-      vim-airline
+      #vim-airline
+      {
+          plugin = lightline-vim;
+          config = "let g:lightline = {'colorscheme': 'PaperColor'}";
+      }
       nerdcommenter
       nerdtree
-      neomake
+      undotree
+      {
+          plugin = neomake;
+          config = ''
+            " When writing a buffer (no delay).
+            call neomake#configure#automake('w')
+            " When writing a buffer (no delay), and on normal mode changes (after 750ms).
+            call neomake#configure#automake('nw', 750)
+            " When reading a buffer (after 1s), and when writing (no delay).
+            call neomake#configure#automake('rw', 1000)
+            " Full config: when writing or reading a buffer, and on changes in insert and
+            " normal mode (after 500ms; no delay when writing).
+            call neomake#configure#automake('nrwi', 500)
+          '';
+      }
       vim-signify
       vim-go
       nvim-lspconfig
@@ -485,19 +550,6 @@ in
       " => rust.vim
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " let g:rustfmt_autosave = 1
-
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      " => neomake
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      " When writing a buffer (no delay).
-      call neomake#configure#automake('w')
-      " When writing a buffer (no delay), and on normal mode changes (after 750ms).
-      call neomake#configure#automake('nw', 750)
-      " When reading a buffer (after 1s), and when writing (no delay).
-      call neomake#configure#automake('rw', 1000)
-      " Full config: when writing or reading a buffer, and on changes in insert and
-      " normal mode (after 500ms; no delay when writing).
-      call neomake#configure#automake('nrwi', 500)
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => netrw
@@ -783,6 +835,8 @@ in
       nnoremap <silent> <Leader>< :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
       nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
       nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+      " Undotree
+      nnoremap <leader>u :UndotreeToggle<cr>
 
       com Wdt windo diffthis
       com Wdo diffoff!
@@ -831,6 +885,7 @@ in
   programs.fzf = {
       enable = true;
       enableZshIntegration = true;
+      enableFishIntegration = true;
       defaultCommand = "fd --type f --hidden -E .git -E .svn ";
       fileWidgetCommand = "fd --type f --hidden -E .git -E .svn . \"$1\"";
       changeDirWidgetCommand = "fd --type d --hidden -E .git -E .svn . \"$1\"";
@@ -838,9 +893,9 @@ in
   };
 
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.overlays = [
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
-  ];
+  #nixpkgs.overlays = [
+  #  (import (builtins.fetchTarball {
+  #    url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+  #  }))
+  #];
 }
