@@ -142,4 +142,4 @@ export NIX_PATH=$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH
 
 export FLYCTL_INSTALL="$HOME/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
-cowsay -f $(cowsay -l | tail -n +2 | xargs -n1 | shuf -n 1) $(/usr/bin/whatis $(ls /usr/share/man/man1 | shuf -n 1 | cut -d. -f1) 2>/dev/null)
+#cowsay -f $(cowsay -l | tail -n +2 | xargs -n1 | shuf -n 1) $(/usr/bin/whatis $(ls /usr/share/man/man1 | shuf -n 1 | cut -d. -f1) 2>/dev/null) :\)

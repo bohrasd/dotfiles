@@ -1,0 +1,54 @@
+shell = "bash -c '{}'"
+
+[[item]]
+file = "~/.config/i3status/config"
+template = "i3status"
+hook = "i3-msg reload"
+light = false
+
+[[item]]
+file = "~/.config/i3/config"
+template = "i3"
+hook = "i3-msg reload"
+light = false
+
+[[item]]
+file = "~/.config/sway/config"
+template = "sway"
+subtemplate = "colors"
+light = false
+hook = "swaymsg reload"
+
+[[item]]
+file = "~/.config/waybar/colors.css"
+template = "waybar"
+rewrite = true
+
+[[item]]
+file = "~/.config/rofi/config.rasi"
+template = "rofi"
+rewrite = true
+
+[[item]]
+file = "~/.config/wofi/style.css"
+template = "wofi"
+rewrite = true
+
+[[item]]
+file = "~/.config/alacritty/alacritty.yml"
+template = "alacritty"
+subtemplate = "default-256"
+
+[[item]]
+file= "~/.config/mako/config"
+template = "mako"
+hook = "killall mako"
+
+[[item]]
+file= "~/.config/dunst/dunstrc"
+template = "dunst"
+hook = "killall dunst"
+
+[[item]]
+file= "~/.Xresources"
+template = "xresources"

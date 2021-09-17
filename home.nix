@@ -58,19 +58,6 @@ aliyun = stdenv.mkDerivation {
     cp -v ./aliyun $out/bin/aliyun
   '';
 };
-argocd = stdenv.mkDerivation {
-  name = "argocd";
-  phases = [ "installPhase" ];
-  src = fetchurl {
-    url = "https://github.com/argoproj/argo-cd/releases/download/v2.0.5/argocd-util-linux-amd64";
-  };
-  installPhase = ''
-    mkdir -p $out/bin
-    cp -v $src $out/bin/argocd
-    chmod +x $out/bin/argocd
-  '';
-};
-
 dyff = stdenv.mkDerivation {
   name = "dyff";
   phases = [ "installPhase" ];
@@ -112,10 +99,12 @@ in
   ];
   home.sessionVariables = {
       KITTY_ENABLE_WAYLAND = 1;
-      WAYLAND_DISPLAY   = "wayland-0";
+      #WAYLAND_DISPLAY   = "wayland-0";
   };
   fonts.fontconfig.enable = pkgs.stdenv.isLinux;
   home.packages = [
+    pkgs.dogdns
+    pkgs.argocd
     pkgs.tree
     pkgs.glab
     pkgs.neofetch
@@ -148,7 +137,6 @@ in
     pkgs.step-ca
     pkgs.swaks
     pkgs.kubernetes-helm
-    pkgs.erlang
     pkgs.cowsay
     pkgs.wireshark-cli
     pkgs.nmap
@@ -173,7 +161,6 @@ in
     qshell
     qsuits
     aliyun
-    argocd
     dyff
   ] else [
     pkgs.coreutils
@@ -221,7 +208,15 @@ in
         {
           plugin = tmuxPlugins.power-theme;
           extraConfig = ''
-            set -g @tmux_power_theme 'snow'
+            set -g @tmux_power_theme 'moon'
+            set -g @tmux_power_date_icon '📅' # set it to a blank will disable the icon
+            set -g @tmux_power_time_icon '🕘'
+            set -g @tmux_power_user_icon '\o'
+            set -g @tmux_power_session_icon '#'
+            set -g @tmux_power_upload_speed_icon '↑'
+            set -g @tmux_power_download_speed_icon '↓'
+            set -g @tmux_power_left_arrow_icon '<'
+            set -g @tmux_power_right_arrow_icon '>'
           '';
         }
       ];
@@ -321,7 +316,10 @@ in
         "cd *"
         "ls *"
         "ll *"
-        "vim? *"
+        "k *"
+        "curl *"
+        "vim *"
+        "man *"
        ];
        ignoreSpace = true;
        path = "$HOME/.zsh_history";
@@ -370,7 +368,7 @@ in
       #vim-airline
       {
           plugin = lightline-vim;
-          config = "let g:lightline = {'colorscheme': 'PaperColor'}";
+          config = "let g:lightline = {'colorscheme': 'one'}";
       }
       nerdcommenter
       nerdtree
@@ -625,6 +623,7 @@ in
 
       " Don’t create backups when editing files in certain directories
       set backupskip=/tmp/*,/private/tmp/*
+      set clipboard+=unnamedplus
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => Text, tab and indent related
@@ -640,7 +639,9 @@ in
 
       " Linebreak on 500 characters
       set lbr
-      set tw=80
+      "set tw=80
+      set tw=0
+      set wm=0
 
       """"""""""""""""""""""""""""""
       " => Visual mode related

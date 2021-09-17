@@ -130,8 +130,8 @@ font:
     style: Italic
 
   # Point size
-  size: 12.0
-  # size: 13
+  #size: 10.0
+    size: 13
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -164,64 +164,50 @@ font:
 
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
-
-# Cyberpunk-Neon colours
+# Start flavours
+# Base16 Nord 256 - alacritty color config
+# arcticicestudio
 colors:
-  # Default colours
+  # Default colors
   primary:
-    background: '0x000b1e'
-    foreground: '0x0abdc6'
+    background: '0x2E3440'
+    foreground: '0xE5E9F0'
 
-  # Colors that should be used to draw the terminal cursor. If these are unset,
-  # the cursor colour will be the inverse of the cell colour.
-  # cursor:
-  #   text: '0x2e2e2d'
-  #   # text: '0x000000'
-  #   cursor: '0xffffff'
+  # Colors the cursor will use if `custom_cursor_colors` is true
+  cursor:
+    text: '0x2E3440'
+    cursor: '0xE5E9F0'
 
   # Normal colors
   normal:
-    black:   '0x123e7c'
-    red:     '0xff0000'
-    green:   '0xd300c4'
-    yellow:  '0xf57800'
-    blue:    '0x123e7c'
-    magenta: '0x711c91'
-    cyan:    '0x0abdc6'
-    white:   '0xd7d7d5'
+    black:   '0x2E3440'
+    red:     '0xBF616A'
+    green:   '0xA3BE8C'
+    yellow:  '0xEBCB8B'
+    blue:    '0x81A1C1'
+    magenta: '0xB48EAD'
+    cyan:    '0x88C0D0'
+    white:   '0xE5E9F0'
 
   # Bright colors
   bright:
-    black:   '0x1c61c2'
-    red:     '0xff0000'
-    green:   '0xd300c4'
-    yellow:  '0xf57800'
-    blue:    '0x00ff00'
-    magenta: '0x711c91'
-    cyan:    '0x0abdc6'
-    white:   '0xd7d7d5'
+    black:   '0x4C566A'
+    red:     '0xBF616A'
+    green:   '0xA3BE8C'
+    yellow:  '0xEBCB8B'
+    blue:    '0x81A1C1'
+    magenta: '0xB48EAD'
+    cyan:    '0x88C0D0'
+    white:   '0x8FBCBB'
 
-  # dim colors
-  dim:
-    black:   '0x1c61c2'
-    red:     '0xff0000'
-    green:   '0xd300c4'
-    yellow:  '0xf57800'
-    blue:    '0x123e7c'
-    magenta: '0x711c91'
-    cyan:    '0x0abdc6'
-    white:   '0xd7d7d5'
-
-
-  # Indexed Colors
-  #
-  # The indexed colors include all colors from 16 to 256.
-  # When these are not set, they're filled with sensible defaults.
-  #
-  # Example:
-  #   `- { index: 16, color: '0xff00ff' }`
-  #
-  indexed_colors: []
+  indexed_colors:
+    - { index: 16, color: '0xD08770' }
+    - { index: 17, color: '0x5E81AC' }
+    - { index: 18, color: '0x3B4252' }
+    - { index: 19, color: '0x434C5E' }
+    - { index: 20, color: '0xD8DEE9' }
+    - { index: 21, color: '0xECEFF4' }
+# End flavours
 
 # Visual Bell
 #

@@ -1,0 +1,45 @@
+markup=1
+actions=1
+
+# Format
+font=Fira Code 8
+border-size=2
+format=<b>%s</b> <span color="#93a1a1">(%a)</span>\n%b
+
+# icons
+icon-path=/usr/share/icons/Papirus-Adapta-Nokto-Maia:/usr/share/icons/Papirus-Maia:/usr/share/icons/Papirus
+# Start flavours
+## Base16 Nord
+# Author: arcticicestudio
+#
+# You can use these variables anywhere in the mako configuration file.
+
+background-color=#2E3440
+text-color=#E5E9F0
+border-color=#81A1C1
+
+[urgency=low]
+background-color=#2E3440
+text-color=#EBCB8B
+border-color=#81A1C1
+
+[urgency=high]
+background-color=#2E3440
+text-color=#BF616A
+border-color=#81A1C1
+# End flavours
+
+# Hidden format
+[hidden]
+format=Hidden: %h [%t]
+
+[app-name=playerctl]
+max-icon-size=96
+
+[app-name=clementine]
+max-icon-size=96
+
+[app-name=i3-hint]
+max-icon-size=48
+format=%s\n%b
+width=150
