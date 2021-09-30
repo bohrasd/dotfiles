@@ -99,6 +99,8 @@ in
   ];
   home.sessionVariables = {
       KITTY_ENABLE_WAYLAND = 1;
+      GDK_SCALE = 2;
+      GDK_DPI_SCALE = 0.5;
       #WAYLAND_DISPLAY   = "wayland-0";
   };
   fonts.fontconfig.enable = pkgs.stdenv.isLinux;
@@ -145,9 +147,9 @@ in
     pkgs.inetutils
     pkgs.nmap
     pkgs.yq
-    pkgs.flyctl
     pkgs.vault
     pkgs.wrk
+    pkgs.hey
     pkgs.zsh-completions
   ]  ++ (if pkgs.stdenv.isLinux then [
     pkgs.xpra
@@ -205,22 +207,23 @@ in
       plugins = [
         tmuxPlugins.sensible
         tmuxPlugins.yank
-        {
-          plugin = tmuxPlugins.power-theme;
-          extraConfig = ''
-            set -g @tmux_power_theme 'moon'
-            set -g @tmux_power_date_icon '📅' # set it to a blank will disable the icon
-            set -g @tmux_power_time_icon '🕘'
-            set -g @tmux_power_user_icon '\o'
-            set -g @tmux_power_session_icon '#'
-            set -g @tmux_power_upload_speed_icon '↑'
-            set -g @tmux_power_download_speed_icon '↓'
-            set -g @tmux_power_left_arrow_icon '<'
-            set -g @tmux_power_right_arrow_icon '>'
-          '';
-        }
+        #{
+        #  plugin = tmuxPlugins.power-theme;
+        #  extraConfig = ''
+        #    set -g @tmux_power_theme 'moon'
+        #    set -g @tmux_power_date_icon '📅' # set it to a blank will disable the icon
+        #    set -g @tmux_power_time_icon '🕘'
+        #    set -g @tmux_power_user_icon '\o'
+        #    set -g @tmux_power_session_icon '#'
+        #    set -g @tmux_power_upload_speed_icon '↑'
+        #    set -g @tmux_power_download_speed_icon '↓'
+        #    set -g @tmux_power_left_arrow_icon '<'
+        #    set -g @tmux_power_right_arrow_icon '>'
+        #  '';
+        #}
       ];
       extraConfig = ''
+        source-file ~/.config/tmux/theme
         # Enable RGB colour if running in xterm(1)
         set-option -sa terminal-overrides ",tmux-256color:RGB"
 
@@ -300,7 +303,7 @@ in
       GO111MODULE       = "auto";
       GITLAB_HOST       = "lqbyun.com";
       GIT_SSH           = "/usr/bin/ssh";
-      VAULT_ADDR = "https://billowing-bird-9580.fly.dev";
+      VAULT_ADDR = "https://vault.akarat.xyz";
     };
 
     shellAliases = {
@@ -363,7 +366,8 @@ in
     viAlias = true;
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
-      papercolor-theme
+      #papercolor-theme
+      #base16-vim
       vim-surround
       #vim-airline
       {
@@ -760,7 +764,6 @@ in
       """"""""""""""""""""""""""""""
       " => Shell section
       """"""""""""""""""""""""""""""
-      set termguicolors
 
       " Add the g flag to search/replace by default
       set gdefault
@@ -870,7 +873,9 @@ in
       let g:go_gopls_enabled = 0
       let g:go_def_mapping_enabled = 0
 
-      colorscheme PaperColor
+      "colorscheme PaperColor
+      colorscheme base16
+      set termguicolors
     '';
   };
 
