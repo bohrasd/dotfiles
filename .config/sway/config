@@ -41,25 +41,25 @@ gaps inner 3
 font pango:Noto Sans CJK SC Medium 12
 
 # Start flavours
-## Base16 Nord
-# Author: arcticicestudio
+## Base16 iA Light
+# Author: iA Inc. (modified by aramisgithub)
 
-set $base00 #2E3440
-set $base01 #3B4252
-set $base02 #434C5E
-set $base03 #4C566A
-set $base04 #D8DEE9
-set $base05 #E5E9F0
-set $base06 #ECEFF4
-set $base07 #8FBCBB
-set $base08 #BF616A
-set $base09 #D08770
-set $base0A #EBCB8B
-set $base0B #A3BE8C
-set $base0C #88C0D0
-set $base0D #81A1C1
-set $base0E #B48EAD
-set $base0F #5E81AC
+set $base00 #f6f6f6
+set $base01 #dedede
+set $base02 #bde5f2
+set $base03 #898989
+set $base04 #767676
+set $base05 #181818
+set $base06 #e8e8e8
+set $base07 #f8f8f8
+set $base08 #9c5a02
+set $base09 #c43e18
+set $base0A #c48218
+set $base0B #38781c
+set $base0C #2d6bb1
+set $base0D #48bac2
+set $base0E #a94598
+set $base0F #8b6c37
 # End flavours
 
 # Basic color configuration using the Base16 variables for windows and borders.
@@ -78,6 +78,10 @@ client.background       $base07
 # screen before suspend. Use loginctl lock-session to lock your screen.
 # exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 # exec xss-lock --transfer-sleep-lock -- swaylock
+
+exec /usr/libexec/sway-systemd/session.sh --with-cleanup
+exec /usr/libexec/sway-systemd/assign-cgroups.py
+
 exec swayidle -w \
          timeout 300 'swaylock -f -c 000000' \
          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
@@ -86,6 +90,7 @@ exec swayidle -w \
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec nm-applet
+exec blueman-applet &
 
 # wallpaper
 # exec_always --no-startup-id ~/dell-display.sh
@@ -109,23 +114,24 @@ input "10007:59:MI_Dongle_MI_Wireless_Mouse" {
     natural_scroll enabled
     left_handed enabled
 }
+input "1133:16411:Logitech_M215_2nd_Gen" {
+    #natural_scroll enabled
+    left_handed enabled
+}
 
 # input method
-# exec_always fcitx5
-# exec_always pgrep ibus-daemon || ibus-daemon -rxd
-#exec ibus-daemon -dr
-#bindsym $mod+space exec sh -c 'if [ "$(ibus engine)" = "rime" ]; then ibus engine xkb:de:nodeadkeys:deu; else ibus engine rime; fi'
+exec_always fcitx5 --replace
+#exec --no-startup-id fcitx5 -d
 
-exec mako
+exec mako &
 # exec_always setxkbmap -option ctrl:swapcaps
 input "type:keyboard" {
     xkb_options ctrl:swapcaps
 }
 
-output eDP-1 scale 1.8
-output HDMI-A-1 scale 1.2
-output HDMI-A-1 pos 0 0 res 1920x1080
-output eDP-1 pos 0 900 res 2560x1440
+#output HDMI-A-1 scale 1.2 pos 0 0 res 1920x1080
+#output eDP-1 scale 2 pos 0 900 res 2560x1440
+output eDP-1 scale 1.6 pos 0 0 res 2560x1440
 #
 #output HDMI-A-1 scale 1 pos 0 0 res 2560x1080
 #output eDP-1 scale 2 pos 540 1080 res 2560x1440
@@ -154,13 +160,15 @@ floating_modifier $mod
 # brightnessctl
 bindsym XF86MonBrightnessUp exec brightnessctl -d amdgpu_bl0 s +10% # increase screen brightness
 bindsym XF86MonBrightnessDown exec brightnessctl -d amdgpu_bl0 s 10%- # decrease screen brightness
+bindsym XF86KbdBrightnessUp exec asusctl -n
+bindsym XF86KbdBrightnessDown exec asusctl -p
 bindsym XF86Launch4 exec asusctl profile -n
 
 # start a terminal
 bindsym $mod+Return exec alacritty
 
 # youtube search
-bindsym $mod+y exec export HTTPS_PROXY=http://127.0.0.1:4411/pac && srch=$(echo "" | wofi -d 2>/dev/null) \
+bindsym $mod+y exec srch=$(echo "" | wofi -d 2>/dev/null) \
 && mpv https://www.youtube.com/watch?v=$(curl -G https://www.googleapis.com/youtube/v3/search?part=snippet\&type=video\&maxResults=30\&key=AIzaSyDoB6-NoejiESdcSp1vbPnIjhyhtH1fq7E \
 --data-urlencode "q=$srch" \
 | jq -r '.items[] | ([.id.videoId,.snippet.title] | join(":"))' \

@@ -47,8 +47,24 @@ hook = "killall mako"
 [[item]]
 file= "~/.config/dunst/dunstrc"
 template = "dunst"
-hook = "killall dunst"
+hook = "pkill dunst"
 
 [[item]]
 file= "~/.Xresources"
 template = "xresources"
+
+[[item]]
+file= "~/.config/tmux/theme"
+template = "tmux"
+hook = "tmux source-file ~/.config/tmux/theme"
+
+[[item]]
+file = "~/.config/nvim/colors/base16.vim"
+template = "vim"
+rewrite = true
+hook = "reloadnvim"
+
+[[item]]
+file = "~/.local/share/konsole/Base16.colorscheme"
+template = "konsole"
+rewrite = true

@@ -1,60 +1,75 @@
 @import "colors.css";
+
 * {
-    border: none;
-    border-radius: 0;
-    font-family: Fira Sans, Fira Code NerdFont;
-    font-size: 12pt;
-    margin: 1.8px 12px 1.8px 12px;
+  transition: none;
+  box-shadow: none;
 }
 
-window#waybar.top {
-    color: @text_color;
-    background-color: alpha(@bg_color, 0.88);
-    border-bottom: 2px solid @selected_bg_color;
-}
-window#waybar.bottom {
-    color: @text_color;
-    background-color: alpha(@bg_color, 0.88);
-    border-top: 2px solid @selected_bg_color;
+#waybar {
+  color: @base04;
+  background: @base01;
 }
 
-window#waybar.hidden {
-    opacity: 0;
-}
-
-#custom-preferredplayer {
-    margin-right: 8px;
-    margin-left: 10px;
-}
-#custom-player {
-    margin-right: 10px;
-    margin-left: 8px;
+#workspaces {
+  margin: 0 4px;
 }
 
 #workspaces button {
-    margin: 0px 0px 0px 0px;
+  margin: 4px 0;
+  padding: 0 6px;
+  color: @base05;
 }
 
 #workspaces button.visible {
-    background-color: @selected_bg_color;
 }
 
 #workspaces button.focused {
-    background-color: @selected_bg_color;
+  border-radius: 4px;
+  background-color: @base02;
 }
 
-#cpu {
-    margin-right: 5px;
-}
-#memory {
-    margin-left: 5px;
+#workspaces button.urgent {
+  color: rgba(238, 46, 36, 1);
 }
 
-#temperature.cpu {
-    margin-right: 3px;
+#tray {
+  margin: 4px 16px 4px 4px;
+  border-radius: 4px;
+  background-color: @base02;
 }
 
-#temperature.gpu {
-    margin-left: 3px;
+#tray * {
+  padding: 0 6px;
+  border-left: 1px solid @base00;
+}
+
+#tray *:first-child {
+  border-left: none;
+}
+
+#mode, #battery, #cpu, #memory, #network, #pulseaudio, #idle_inhibitor, #backlight, #custom-storage, #custom-spotify, #custom-weather, #custom-mail, #clock, #temperature {
+  margin: 4px 2px;
+  padding: 0 6px;
+  background-color: @base02;
+  border-radius: 4px;
+  min-width: 20px;
+}
+
+#pulseaudio.muted {
+  color: @base0F;
+}
+
+#pulseaudio.bluetooth {
+  color: @base0C;
+}
+
+#clock {
+  margin-left: 12px;
+  margin-right: 4px;
+  background-color: transparent;
+}
+
+#temperature.critical {
+  color: @base0F;
 }
 

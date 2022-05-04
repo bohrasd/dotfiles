@@ -1,32 +1,38 @@
+font="Fira Sans 11"
+icon-path=/usr/share/icons/Papirus-Dark
+max-icon-size=32
+padding=10,20
+anchor=top-center
+default-timeout=8000
+width=400
+height=150
+border-size=3
 markup=1
 actions=1
 
-# Format
-font=Fira Code 8
-border-size=2
 format=<b>%s</b> <span color="#93a1a1">(%a)</span>\n%b
 
 # icons
 icon-path=/usr/share/icons/Papirus-Adapta-Nokto-Maia:/usr/share/icons/Papirus-Maia:/usr/share/icons/Papirus
 # Start flavours
-## Base16 Nord
-# Author: arcticicestudio
+## Base16 iA Light
+# Author: iA Inc. (modified by aramisgithub)
 #
 # You can use these variables anywhere in the mako configuration file.
 
-background-color=#2E3440
-text-color=#E5E9F0
-border-color=#81A1C1
+background-color=#f6f6f6
+text-color=#181818
+border-color=#48bac2
 
 [urgency=low]
-background-color=#2E3440
-text-color=#EBCB8B
-border-color=#81A1C1
+background-color=#f6f6f6
+text-color=#c48218
+border-color=#48bac2
 
 [urgency=high]
-background-color=#2E3440
-text-color=#BF616A
-border-color=#81A1C1
+background-color=#f6f6f6
+text-color=#9c5a02
+border-color=#48bac2
 # End flavours
 
 # Hidden format

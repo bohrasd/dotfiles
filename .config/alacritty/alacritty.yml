@@ -19,7 +19,7 @@ window:
   # If both are `0`, this setting is ignored.
   dimensions:
     columns: 120
-    lines: 36
+    lines: 40
     # columns: 120
     # lines: 28
 
@@ -130,8 +130,8 @@ font:
     style: Italic
 
   # Point size
-  #size: 10.0
-    size: 13
+  size: 11.0
+    #size: 13
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -165,48 +165,48 @@ font:
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 # Start flavours
-# Base16 Nord 256 - alacritty color config
-# arcticicestudio
+# Base16 iA Light 256 - alacritty color config
+# iA Inc. (modified by aramisgithub)
 colors:
   # Default colors
   primary:
-    background: '0x2E3440'
-    foreground: '0xE5E9F0'
+    background: '0xf6f6f6'
+    foreground: '0x181818'
 
   # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
-    text: '0x2E3440'
-    cursor: '0xE5E9F0'
+    text: '0xf6f6f6'
+    cursor: '0x181818'
 
   # Normal colors
   normal:
-    black:   '0x2E3440'
-    red:     '0xBF616A'
-    green:   '0xA3BE8C'
-    yellow:  '0xEBCB8B'
-    blue:    '0x81A1C1'
-    magenta: '0xB48EAD'
-    cyan:    '0x88C0D0'
-    white:   '0xE5E9F0'
+    black:   '0xf6f6f6'
+    red:     '0x9c5a02'
+    green:   '0x38781c'
+    yellow:  '0xc48218'
+    blue:    '0x48bac2'
+    magenta: '0xa94598'
+    cyan:    '0x2d6bb1'
+    white:   '0x181818'
 
   # Bright colors
   bright:
-    black:   '0x4C566A'
-    red:     '0xBF616A'
-    green:   '0xA3BE8C'
-    yellow:  '0xEBCB8B'
-    blue:    '0x81A1C1'
-    magenta: '0xB48EAD'
-    cyan:    '0x88C0D0'
-    white:   '0x8FBCBB'
+    black:   '0x898989'
+    red:     '0x9c5a02'
+    green:   '0x38781c'
+    yellow:  '0xc48218'
+    blue:    '0x48bac2'
+    magenta: '0xa94598'
+    cyan:    '0x2d6bb1'
+    white:   '0xf8f8f8'
 
   indexed_colors:
-    - { index: 16, color: '0xD08770' }
-    - { index: 17, color: '0x5E81AC' }
-    - { index: 18, color: '0x3B4252' }
-    - { index: 19, color: '0x434C5E' }
-    - { index: 20, color: '0xD8DEE9' }
-    - { index: 21, color: '0xECEFF4' }
+    - { index: 16, color: '0xc43e18' }
+    - { index: 17, color: '0x8b6c37' }
+    - { index: 18, color: '0xdedede' }
+    - { index: 19, color: '0xbde5f2' }
+    - { index: 20, color: '0x767676' }
+    - { index: 21, color: '0xe8e8e8' }
 # End flavours
 
 # Visual Bell

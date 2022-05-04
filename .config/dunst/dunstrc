@@ -31,7 +31,7 @@
     # the top and down respectively.
     # The width can be negative.  In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
-    geometry = "300x5-30+20"
+    geometry = "500x10-30+20"
 
     # Scale factor. It is auto-detected if value is 0.
     scale = 0
@@ -64,7 +64,7 @@
     # The transparency of the window.  Range: [0; 100].
     # This option will only work if a compositing window manager is
     # present (e.g. xcompmgr, compiz, etc.). (X11 only)
-    transparency = 0
+    transparency = 10
 
     # The height of the entire notification.  If the height is smaller
     # than the font height and padding combined, it will be raised
@@ -112,7 +112,7 @@
 
     ### Text ###
 
-    font = Monospace 8
+    font = Monospace 11
 
     # The spacing between lines.  If the height is smaller than the
     # font height, it will get raised to the font height.
@@ -305,26 +305,26 @@
     # dunst will attempt to calculate an appropriate dpi value for each monitor
     # using the resolution and physical size. This might be useful in setups
     # where there are multiple screens with very different dpi values.
-    per_monitor_dpi = false
+    per_monitor_dpi = true
 
 # Start flavours
-frame_color = "#E5E9F0"
-separator_color = "#E5E9F0"
+frame_color = "#181818"
+separator_color = "#181818"
 
 [base16_low]
     msg_urgency = low
-    background = "#3B4252"
-    foreground = "#4C566A"
+    background = "#dedede"
+    foreground = "#898989"
 
 [base16_normal]
     msg_urgency = normal
-    background = "#434C5E"
-    foreground = "#E5E9F0"
+    background = "#bde5f2"
+    foreground = "#181818"
 
 [base16_critical]
     msg_urgency = critical
-    background = "#BF616A"
-    foreground = "#ECEFF4"
+    background = "#9c5a02"
+    foreground = "#e8e8e8"
 # End flavours
 
 

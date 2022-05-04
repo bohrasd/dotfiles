@@ -1,30 +1,30 @@
 /* base16-wofi (https://sr.ht/~knezi/base16-wofi)
  * Base16 wofi template by knezi
- * Nord scheme by arcticicestudio */
+ * iA Light scheme by iA Inc. (modified by aramisgithub) */
 
 window {
-	background-color: #2E3440;
-	color: #E5E9F0;
+	background-color: #f6f6f6;
+	color: #181818;
 }
 
 #entry:nth-child(odd) {
-	background-color: #2E3440;
+	background-color: #f6f6f6;
 }
 
 #entry:nth-child(even) {
-	background-color: #3B4252;
+	background-color: #dedede;
 }
 
 #entry:selected {
-	background-color: #434C5E;
+	background-color: #bde5f2;
 }
 
 #input {
-	background-color: #3B4252;
-	color: #D8DEE9;
-	border-color: #434C5E; 
+	background-color: #dedede;
+	color: #767676;
+	border-color: #bde5f2; 
 }
 
 #input:focus {
-	border-color: #EBCB8B; 
+	border-color: #c48218; 
 }

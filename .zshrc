@@ -40,8 +40,11 @@ export PATH=$DOTFILES/bin:$HOME/bin:$HOME/.nix-profile/bin:$HOME/.local/bin:/usr
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
 
-setopt appendhistory
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#777777"
+#setopt appendhistory
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+#ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#777777"
 
 # User configuration
 
@@ -53,9 +56,6 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#777777"
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
 
-# ssh
-# export SSH_KEY_PATH="~/.ssh/dsa_id"
-
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
@@ -63,7 +63,7 @@ else
   export EDITOR='vim'
 fi
 
-export ZSH_CACHE_DIR=~/.dotfiles/zsh/my-site-functions
+#export ZSH_CACHE_DIR=~/.dotfiles/zsh/my-site-functions
 
 # Source all .zsh files inside the zsh/ directory
 for config ($DOTFILES/zsh/*.zsh) source $config
@@ -80,60 +80,12 @@ unsetopt nomatch
 
 # Add GOPATH
 
-function proxy_on() {
-    export no_proxy="localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,192.168.10.0/2410.96.0.0/12,192.168.122.0/24,192.168.39.0/24"
-
-    if (( $# > 0 )); then
-        valid=$(echo $@ | sed -n 's/\([0-9]\{1,3\}.\?\)\{4\}:\([0-9]\+\)/&/p')
-        if [[ $valid != $@ ]]; then
-            >&2 echo "Invalid address"
-            return 1
-        fi
-        local proxy=$1
-        export http_proxy="$proxy" \
-               https_proxy=$proxy \
-               ftp_proxy=$proxy \
-               rsync_proxy=$proxy \
-               all_proxy=$proxy
-        echo "Proxy environment variable set."
-        return 0
-    fi
-
-    echo -n "username: "; read username
-    if [[ $username != "" ]]; then
-        echo -n "password: "
-        read -es password
-        local pre="$username:$password@"
-    fi
-
-    echo -n "server: "; read server
-    echo -n "port: "; read port
-    local proxy=$pre$server:$port
-    export http_proxy="$proxy" \
-           https_proxy=$proxy \
-           ftp_proxy=$proxy \
-           rsync_proxy=$proxy \
-           HTTP_PROXY=$proxy \
-           HTTPS_PROXY=$proxy \
-           FTP_PROXY=$proxy \
-           RSYNC_PROXY=$proxy \
-           ALL_PROXY=$proxy \
-           all_proxy=$proxy
-}
-
-function proxy_off(){
-    unset http_proxy https_proxy ftp_proxy rsync_proxy \
-          HTTP_PROXY HTTPS_PROXY FTP_PROXY RSYNC_PROXY ALL_PROXY all_proxy
-    echo -e "Proxy environment variable removed."
-}
-
 generate_random () {
-  cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1
+  cat /dev/urandom | tr -dc 'a-zA-Z0-9_\-&?!%$#@*' | fold -w ${1:-32} | head -n 1
 }
 
-eval "$(starship init zsh)"
-autoload -U select-word-style
-select-word-style bash
+#autoload -U select-word-style
+#select-word-style bash
 
 eval $(navi widget zsh)
 
@@ -143,3 +95,9 @@ export NIX_PATH=$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH
 export FLYCTL_INSTALL="$HOME/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
 #cowsay -f $(cowsay -l | tail -n +2 | xargs -n1 | shuf -n 1) $(/usr/bin/whatis $(ls /usr/share/man/man1 | shuf -n 1 | cut -d. -f1) 2>/dev/null) :\)
+
+#autoload -U +X compinit && compinit -i
+
+#bindkey -e
+
+#cowsay -f $(cowsay -l | tail -n +2 | xargs -n1 | shuf -n 1) $(/usr/bin/apropos -s 2 . | shuf -n 1 ) :\)

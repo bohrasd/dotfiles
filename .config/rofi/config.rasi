@@ -1,19 +1,19 @@
 /**
- * Base16 Nord ROFI Color theme
+ * Base16 iA Light ROFI Color theme
  *
  * Authors
- *  Scheme: arcticicestudio
+ *  Scheme: iA Inc. (modified by aramisgithub)
  *  Template: Jordi Pakey-Rodriguez (https://github.com/0xdec), Andrea Scarpino (https://github.com/ilpianista)
  */
 
 * {
-    red:                         rgba ( 191, 97, 106, 100 % );
-    blue:                        rgba ( 129, 161, 193, 100 % );
-    lightfg:                     rgba ( 236, 239, 244, 100 % );
-    lightbg:                     rgba ( 59, 66, 82, 100 % );
-    foreground:                  rgba ( 229, 233, 240, 100 % );
-    background:                  rgba ( 46, 52, 64, 100 % );
-    background-color:            rgba ( 46, 52, 64, 0 % );
+    red:                         rgba ( 156, 90, 2, 100 % );
+    blue:                        rgba ( 72, 186, 194, 100 % );
+    lightfg:                     rgba ( 232, 232, 232, 100 % );
+    lightbg:                     rgba ( 222, 222, 222, 100 % );
+    foreground:                  rgba ( 24, 24, 24, 100 % );
+    background:                  rgba ( 246, 246, 246, 100 % );
+    background-color:            rgba ( 246, 246, 246, 0 % );
     separatorcolor:              @foreground;
     border-color:                @foreground;
     selected-normal-foreground:  @lightbg;
@@ -60,6 +60,10 @@ listview {
     spacing:          2px ;
     scrollbar:        true;
     padding:          2px 0px 0px ;
+}
+element-text, element-icon {
+    background-color: inherit;
+    text-color:       inherit;
 }
 element {
     border:           0;

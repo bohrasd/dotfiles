@@ -5,7 +5,7 @@
 
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["sway/window"],
-    "modules-right": ["tray", "memory", "network", "battery", "idle_inhibitor", "clock"],
+    "modules-right": ["tray", "memory", "disk", "network", "battery", "idle_inhibitor", "clock"],
     "sway/mode": {
         "format": " {}"
     },
@@ -43,6 +43,13 @@
         "max-length": 10,
         "tooltip": false
     },
+	"disk": {
+		"interval": 300,
+		"format": "{percentage_used}% ",
+		"path": "/",
+        "max-length": 10,
+		"on-click": "dolphin"
+	},
     "battery": {
         "bat": "BAT0",
         "format": "{capacity}% {icon}",
@@ -112,12 +119,6 @@
 		"format": "",
 		"on-click": "xdg-open https://github.com",
 		"tooltip": false
-	},
-	"disk": {
-		"interval": 5,
-		"format": " {percentage_used}%",
-		"path": "/",
-		"on-click": "dolphin"
 	},
     "idle_inhibitor": {
         "format": "{icon}",
