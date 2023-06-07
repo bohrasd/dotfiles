@@ -1,64 +1,10 @@
 { config, pkgs, ... }:
 
-with import <nixpkgs> {};
+with import <nixpkgs> { config = { allowUnfree = true; }; };
 with builtins;
 with lib;
 with autoPatchelfHook;
 
-let
-qsuits = stdenv.mkDerivation {
-  name = "qsuits";
-  phases = [ "installPhase" ];
-  src = fetchurl {
-    url = "https://devtools.qiniu.com/qsuits_linux_amd64";
-    sha256 = "0vfkvd419qspgjfb8l86a281af3xr4k8skz52vypzq4xcsnynq5f";
-  };
-  installPhase = ''
-    mkdir -p $out/bin
-    cp -v $src $out/bin/qsuits
-    chmod +x $out/bin/qsuits
-  '';
-};
-qshell = stdenv.mkDerivation {
-  name = "qshell";
-  phases = [ "installPhase" ];
-  src = fetchurl {
-    url = "https://devtools.qiniu.com/qshell-v2.6.2-linux-amd64.tar.gz";
-    sha256 = "11mhd62d7kvwpwf2xk2n4c4f38pc1y7k5777wkcqym0ryvc9g855";
-  };
-  installPhase = ''
-    tar xzf $src
-    mkdir -p $out/bin
-    cp -v ./qshell $out/bin/qshell
-  '';
-};
-aliyun = stdenv.mkDerivation {
-  name = "aliyun";
-  phases = [ "installPhase" ];
-  src = fetchurl {
-    url = "https://github.com/aliyun/aliyun-cli/releases/download/v3.0.85/aliyun-cli-linux-3.0.85-amd64.tgz";
-    sha256 = "1gcfw1w6q253yvdfjn5psqis7gg4z8wwc4k86bjzml7v0infbqc0";
-  };
-  installPhase = ''
-    tar xzf $src
-    mkdir -p $out/bin
-    cp -v ./aliyun $out/bin/aliyun
-  '';
-};
-dyff = stdenv.mkDerivation {
-  name = "dyff";
-  phases = [ "installPhase" ];
-  src = fetchurl {
-    url = "https://github.com/homeport/dyff/releases/download/v1.4.3/dyff_1.4.3_linux_amd64.tar.gz";
-    sha256 = "35d12bdfcb709f5d82e5f458a958ec87c77674e406279659e7e2ded4486cdfe6";
-  };
-  installPhase = ''
-    tar xzf $src
-    mkdir -p $out/bin
-    cp -v ./dyff $out/bin/dyff
-  '';
-};
-in
 {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -76,7 +22,7 @@ in
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
-  home.stateVersion = "21.05";
+  home.stateVersion = "22.11";
 
   home.sessionPath = [
     "$HOME/go"
@@ -95,28 +41,22 @@ in
     #pkgs.argocd
     pkgs.tree
     #pkgs.glab
-    #pkgs.gh
-    pkgs.neofetch
-    #pkgs.lolcat
-    pkgs.aria2
+    pkgs.gh
     pkgs.go
     pkgs.gotools
-    #pkgs.goimports
     pkgs.gopls
     pkgs.delve
-    #pkgs.ginkgo
     pkgs.subversion
-    pkgs.navi
     pkgs.ripgrep
     pkgs.fd
     pkgs.kubectl
     pkgs.krew
     pkgs.k9s
-    #pkgs.ranger
     pkgs.gdb
     pkgs.gcc
     pkgs.nodePackages.bash-language-server
-    pkgs.bat
+    pkgs.nodePackages.typescript-language-server
+    pkgs.terraform-ls
     pkgs.netcat
     pkgs.ncdu
     pkgs.step-cli
@@ -125,11 +65,8 @@ in
     pkgs.kubernetes-helm
     pkgs.cowsay
     pkgs.nmap
-    pkgs.translate-shell
-    #pkgs.p7zip
     pkgs.inetutils
     pkgs.yq
-    #pkgs.htmlq
     pkgs.fx
     pkgs.jo
     pkgs.jc
@@ -137,56 +74,44 @@ in
     pkgs.flavours
     #pkgs.buildpack
     #pkgs.telepresence2
-    pkgs.nerdctl
-    pkgs.skopeo
-    pkgs.umoci
     pkgs.vault
     pkgs.wrk
     pkgs.hey
-    pkgs.trivy
+    pkgs.navi
+    awscli2
+    ssm-session-manager-plugin
+    #tfswitch
+    jsonnet
+    sshuttle
+    dyff
+    gnupg
+    bitwarden-cli
+    cobalt
+    nodejs-16_x
+    pam-reattach
   ]  ++ (if pkgs.stdenv.isLinux then [
+    pkgs.trivy
+    pkgs.translate-shell
+    pkgs.skopeo
+    pkgs.umoci
+    pkgs.nerdctl
+    pkgs.neofetch
+    pkgs.rclone
+    pkgs.aria2
     pkgs.clipman
     pkgs.strace
     pkgs.man-pages
     pkgs.libcap.doc
     pkgs.wl-clipboard
     (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "DroidSansMono" ]; })
-    #qshell
-    #qsuits
-    aliyun
-    dyff
   ] else [
     pkgs.coreutils
+    watch
   ]);
 
   programs.jq.enable = true;
   programs.htop = {
       enable = true;
-      settings = {
-          left_meters = ["AllCPUs4" "Memory" "Swap"];
-          left_meter_modes = [1 1 1];
-          right_meters = ["Tasks" "LoadAverage" "Uptime" "Systemd" ];
-          right_meter_modes = [2 2 2 2];
-          hide_threads = 1;
-          hide_kernel_threads = 1;
-          hide_userland_threads = 1;
-          fields = with config.lib.htop.fields; [
-           PID
-           USER
-           PRIORITY
-           NICE
-           OOM
-           M_SIZE
-           M_RESIDENT
-           M_SHARE
-           STATE
-           PERCENT_CPU
-           PERCENT_MEM
-           TIME
-           COMM
-          ];
-          vim_mode = 1;
-      };
   };
 
   programs.tmux = {
@@ -195,7 +120,7 @@ in
       escapeTime = 10;
       keyMode = "vi";
       prefix = "C-a";
-      resizeAmount = 10;
+      resizeAmount = 5;
       customPaneNavigationAndResize = true;
       plugins = [
         tmuxPlugins.sensible
@@ -216,6 +141,8 @@ in
 
         # Renumber windows when a window is closed
         set -g renumber-windows on
+
+        setw -g window-status-format "#(basename #{pane_current_path})".
       '';
   };
 
@@ -223,30 +150,28 @@ in
     enable = true;
     userName  = "bohrasd";
     userEmail = "bohrasdf@gmail.com";
-    extraConfig = ''
-      [alias]
-      l = log --pretty=oneline -n 20 --graph --abbrev-commit
-      s = status -s
-      p = push origin HEAD
-      c = clone --recursive
-      ca = !git add -A && git commit -av
-      go = "!f() { git checkout -b \"''$1\" ''${2:-\"origin\"}/$1 2> /dev/null || git checkout -b \"''$1\" 2> /dev/null || git checkout \"''$1\"; }; f"
-      tags = tag -l
-      bs = branch -a
-      b = branch
-      co = checkout
-      rs = remote -v
-      amend = commit --amend --reuse-message=HEAD
-      credit = "!f() { git commit --amend --author \"''$1 <''$2>\" -C HEAD; }; f"
-      reb = "!r() { git rebase -i HEAD~''$1; }; r"
-      retag = "!r() { git tag -d ''$1 && git push origin :refs/tags/''$1 && git tag ''$1; }; r"
-      fb = "!f() { git branch -a --contains ''$1; }; f"
-      ft = "!f() { git describe --always --contains ''$1; }; f"
-      fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S''$1; }; f"
-      fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=''$1; }; f"
-      dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
-      contributors = shortlog --summary --numbered
-    '';
+    aliases = {
+      l = "log --pretty=oneline -n 20 --graph --abbrev-commit";
+      s = "status -s";
+      p = "push origin HEAD";
+      c = "clone --recursive";
+      ca = "!git add -A && git commit -av";
+      go = ''
+      "!f() { git checkout -b \"''$1\" ''${2:-\"origin\"}/$1 2> /dev/null || git checkout -b \"''$1\" 2> /dev/null || git checkout \"''$1\"; }; f"
+      '';
+      tags = "tag -l";
+      bs = "branch -a";
+      b = "branch";
+      co = "checkout";
+      rs = "remote -v";
+      amend = "commit --amend --reuse-message=HEAD";
+      fb = "!f() { git branch -a --contains ''$1; }; f";
+      ft = "!f() { git describe --always --contains ''$1; }; f";
+      fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S''$1; }; f";
+      fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=''$1; }; f";
+      dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d";
+      contributors = "shortlog --summary --numbered";
+    };
   };
 
   programs.zsh = {
@@ -268,10 +193,17 @@ in
       GO111MODULE       = "auto";
       GIT_SSH           = "/usr/bin/ssh";
       VAULT_ADDR = "https://v.ikeypose.com";
+      AWS_CLI_AUTO_PROMPT = "on";
+      ASCIINEMA_API_URL = "https://asciinema.ikeypose.com";
     };
 
     shellAliases = {
-        sns="kubectl config set-context --current --namespace ";
+        sns="kubectl config set-context --current --namespace $(kubectl get ns -o name | fzf | cut -d/ -f2)";
+        assume="source assume";
+        kct="kubectl config use-context $(kubectl config get-contexts -o name | fzf)";
+        tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale";
+        #docker="podman";
+        #docker-compose="compose";
     };
     history = {
        expireDuplicatesFirst = true;
@@ -285,6 +217,8 @@ in
         "flatpak *"
         #"(docker|git|step) *"
         "sudo dnf (install|search|update|copr|reinstall|remove|history|group) *"
+        "git (add|commit|push|pull|go) *"
+        "terraform apply -target*"
        ];
        ignoreSpace = true;
        path = "$HOME/.zsh_history";
@@ -307,12 +241,42 @@ in
     enableZshIntegration = true;
     enableFishIntegration = true;
     settings = {
+      format = "$kubernetes$env_var$aws$custom$line_break$all$line_break$character";
       kubernetes = {
         disabled = false;
+        style = "blue";
       };
       env_var = {
-        variable = "http_proxy";
-        style = "dimmed bold bright-green";
+        PROXY = {
+            variable = "http_proxy";
+            style = "dimmed bold bright-green";
+        };
+        KOPS = {
+            symbol = "ⓚ ";
+            format = "[\${symbol}$env_value]($style) ";
+            variable = "CLUSTER_NAME";
+            style = "bright-green";
+        };
+      };
+      aws = {
+          format = "on [$symbol($profile )(\($region\) )]($style)";
+          symbol = "🅰 ";
+          region_aliases = {
+              ap-southeast-1 = "sg";
+              us-east-1 = "nv";
+              ap-northeast-1 = "tokyo";
+          };
+      };
+      custom = {
+        oidc = {
+            disabled = true;
+            command = ''
+                Arn=arn:aws:iam::$(grep -r ''${AWS_ACCESS_KEY_ID:-none} ~/.oidc2aws/ | grep -o "[0-9]\{11,13\}"):role/OrganizationAccountAccessRole && tomlq -r --arg Arn "$Arn" -c '.alias | to_entries[] | select(.value.roleChain[-1]==$Arn) .key' ~/.oidc2aws/oidcconfig
+            '';
+            when = "test \"$AWS_ACCESS_KEY_ID\" != \"\"";
+            shell = "zsh";
+            style = "bright-yellow";
+        };
       };
     };
   };
@@ -324,10 +288,8 @@ in
     viAlias = false;
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
-      #papercolor-theme
-      #base16-vim
       vim-surround
-      #vim-airline
+      copilot-vim
       {
           plugin = lightline-vim;
           config = "let g:lightline = {'colorscheme': 'one'}";
@@ -350,7 +312,19 @@ in
           '';
       }
       vim-signify
-      vim-go
+      vim-fugitive
+      {
+          plugin = vim-go;
+          config = ''
+
+              " Go configuration
+              let g:go_fmt_command = "goimports"
+              let g:go_list_type = "quickfix"
+              let g:go_term_mode = "split"
+              let g:go_gopls_enabled = 0
+              let g:go_def_mapping_enabled = 0
+          '';
+      }
       nvim-lspconfig
       friendly-snippets
       vim-vsnip
@@ -363,6 +337,12 @@ in
       vim-visual-multi
       fzf-vim
       tabular
+      {
+          plugin = vim-terraform;
+          config = "let g:terraform_fmt_on_save = 1";
+      }
+      vim-jsonnet
+
     ];
     extraConfig = ''
 
@@ -377,7 +357,7 @@ in
             vim.fn["vsnip#anonymous"](args.body)
           end,
         },
-        mapping = {
+        mapping = cmp.mapping.preset.insert({
           ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
           ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
           ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
@@ -387,7 +367,7 @@ in
             c = cmp.mapping.close(),
           }),
           ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        },
+        }),
         sources = cmp.config.sources({
           { name = 'nvim_lsp' },
           { name = 'vsnip' },
@@ -429,7 +409,7 @@ in
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gh', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
@@ -440,14 +420,14 @@ in
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
         -- Set some keybinds conditional on server capabilities
-        if client.resolved_capabilities.document_formatting then
+        if client.server_capabilities.documentFormattingProvider then
           vim.api.nvim_buf_set_keymap(bufnr, "n", "<space>F", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-        elseif client.resolved_capabilities.document_range_formatting then
+        elseif client.server_capabilities.documentRangeFormattingProvider then
           vim.api.nvim_buf_set_keymap(bufnr, "n", "<space>F", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
         end
 
         -- Set autocommands conditional on server_capabilities
-        if client.resolved_capabilities.document_highlight then
+        if client.server_capabilities.documentHighlight then
           vim.api.nvim_exec([[
             hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
             hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
@@ -461,8 +441,9 @@ in
         end
       end
 
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+      -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+      -- capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
       capabilities.textDocument.completion.completionItem.snippetSupport = true
       capabilities.textDocument.completion.completionItem.resolveSupport = {
           properties = {
@@ -477,7 +458,8 @@ in
       local servers = {
           "gopls",
           "bashls",
-          "pylsp"
+          "pylsp",
+          "terraformls"
           -- "rust_analyzer",
       }
       for _, lsp in pairs(servers) do
@@ -491,6 +473,8 @@ in
       end
 
       EOF
+      "autocmd BufWritePre *.tf lua vim.lsp.buf.formatting_sync()
+
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => Tabular
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -524,20 +508,6 @@ in
       endfunction
 
       command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
-
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      " => rust.vim
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      " let g:rustfmt_autosave = 1
-
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      " => netrw
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      let g:netrw_liststyle = 3
-      let g:netrw_browse_split = 4
-      let g:netrw_altv = 1
-
-      au FileType netrw setl bufhidden=wipe
 
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => General
@@ -629,6 +599,9 @@ in
       "set tw=80
       set tw=0
       set wm=0
+
+      " yaml weird issue https://github.com/vim/vim/issues/2049
+      set mmp=5000
 
       """"""""""""""""""""""""""""""
       " => Visual mode related
@@ -735,15 +708,6 @@ in
           autocmd BufWritePre * :call StripWhitespace()
       endif
 
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      " => Misc
-      """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      " Quickly open a buffer for scribble
-      map <leader>z :e ~/buffer<cr>
-
-      " Quickly open a markdown buffer for scribble
-      map <leader>x :e ~/buffer.md<cr>
-
       """"""""""""""""""""""""""""""
       " => Shell section
       """"""""""""""""""""""""""""""
@@ -792,8 +756,6 @@ in
           endif
       endfunction
       noremap <leader>m :History<CR>
-      " noremap <bs> :tabprevious<CR>
-      " noremap <C-l> :tabnext<CR>
       " brackets input
       nnoremap <silent> [a :lprevious<CR>
       nnoremap <silent> ]a :lnext<CR>
@@ -810,6 +772,11 @@ in
       nnoremap <leader>a :RG<space>
       noremap <leader>l  : Tab/
       " Switch quickfix
+      nnoremap <leader>gs :Git<CR>
+      nnoremap <leader>gc :Git commit<CR>
+      nnoremap <leader>gp :Git push origin HEAD<CR>
+      nnoremap <leader>gr :Git rebase<CR>
+      nnoremap <leader>gl :Git pull<CR>
       nnoremap [q :cprevious<CR>
       nnoremap ]q :cnext<CR>
       " Switch location list
@@ -818,10 +785,6 @@ in
       " Down is really the next line
       nnoremap j gj
       nnoremap k gk
-      " Resize vsplit
-      nmap 25s :vertical resize 40<cr>
-      nmap 50s <c-w>=
-      nmap 75s :vertical resize 120<cr>
       nnoremap <silent> <Leader>> :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
       nnoremap <silent> <Leader>< :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
       nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
@@ -862,12 +825,6 @@ in
           return join(map(values(buffer_numbers), 'fnameescape(v:val)'))
       endfunction
 
-      " Go configuration
-      let g:go_fmt_command = "goimports"
-      let g:go_list_type = "quickfix"
-      let g:go_term_mode = "split"
-      let g:go_gopls_enabled = 0
-      let g:go_def_mapping_enabled = 0
 
       "colorscheme PaperColor
       colorscheme base16
@@ -885,7 +842,6 @@ in
       tmux.enableShellIntegration = true;
   };
 
-  nixpkgs.config.allowUnfree = true;
   #nixpkgs.overlays = [
   #  (import (builtins.fetchTarball {
   #    url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;

@@ -1,6 +1,6 @@
 export DOTFILES=$HOME/.dotfiles
 # If you come from bash you might have to change your $PATH.
-export PATH=$DOTFILES/bin:$HOME/bin:$HOME/.nix-profile/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.composer/vendor/bin/:$HOME/go/bin:$PATH
+export PATH=$DOTFILES/bin:$HOME/bin:$HOME/.nix-profile/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.composer/vendor/bin/:$HOME/go/bin:$HOME/Library/Python/3.8/bin:$HOME/.local/share/containers/podman-desktop/extensions-storage/compose/bin:$PATH
 
 
 # Uncomment the following line to use case-sensitive completion.
@@ -81,6 +81,7 @@ unsetopt nomatch
 # Add GOPATH
 
 generate_random () {
+  #cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1
   cat /dev/urandom | tr -dc 'a-zA-Z0-9_\-&?!%$#@*' | fold -w ${1:-32} | head -n 1
 }
 
@@ -90,7 +91,7 @@ generate_random () {
 eval $(navi widget zsh)
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
-export NIX_PATH=$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH
+export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels${NIX_PATH:+:$NIX_PATH}
 
 export FLYCTL_INSTALL="$HOME/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
@@ -101,3 +102,11 @@ export PATH="$FLYCTL_INSTALL/bin:$PATH"
 #bindkey -e
 
 #cowsay -f $(cowsay -l | tail -n +2 | xargs -n1 | shuf -n 1) $(/usr/bin/apropos -s 2 . | shuf -n 1 ) :\)
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C $HOME/bin/terraform terraform
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/zhangzheyuan/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/zhangzheyuan/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/zhangzheyuan/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/zhangzheyuan/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
