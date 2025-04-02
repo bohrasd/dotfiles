@@ -147,8 +147,8 @@
 	followTags = true
 
 [user]
-	name = yuan
-	email = yuan@theplant.jp
+	name = akarat
+	email = bohrasdf@gmail.com
 [credential]
 	helper = cache --timeout=2592000
 [pull]
