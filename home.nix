@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, osConfig, ... }:
 
 with import <nixpkgs> { config = { allowUnfree = true; }; };
 with builtins;
@@ -22,18 +22,19 @@ with autoPatchelfHook;
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
-  home.stateVersion = "22.11";
+  home.stateVersion = "25.05";
 
   home.sessionPath = [
     "$HOME/go"
     "$HOME/.krew/bin"
-    "$HOME/.linkerd2/bin/"
   ];
   home.sessionVariables = {
       #GDK_SCALE = 2;
       #GDK_DPI_SCALE = 0.5;
       #MOZ_DISABLE_RDD_SANDBOX = 1;
       WAYLAND_DISPLAY   = "wayland-0";
+      TF_CLI_ARGS_plan  = "--parallelism=200";
+      TF_CLI_ARGS_apply = "--parallelism=30";
   };
   fonts.fontconfig.enable = pkgs.stdenv.isLinux;
   home.packages = [
@@ -50,15 +51,11 @@ with autoPatchelfHook;
     pkgs.ripgrep
     pkgs.fd
     pkgs.kubectl
-    pkgs.krew
-    pkgs.k9s
-    pkgs.gdb
-    pkgs.gcc
     pkgs.nodePackages.bash-language-server
     pkgs.nodePackages.typescript-language-server
     pkgs.terraform-ls
     pkgs.netcat
-    pkgs.ncdu
+    #pkgs.ncdu
     pkgs.step-cli
     pkgs.step-ca
     pkgs.swaks
@@ -72,11 +69,10 @@ with autoPatchelfHook;
     pkgs.jc
     #pkgs.skaffold
     pkgs.flavours
-    #pkgs.buildpack
     #pkgs.telepresence2
     pkgs.vault
     pkgs.wrk
-    pkgs.hey
+    #pkgs.hey
     pkgs.navi
     awscli2
     ssm-session-manager-plugin
@@ -85,18 +81,21 @@ with autoPatchelfHook;
     sshuttle
     dyff
     gnupg
-    bitwarden-cli
-    cobalt
-    nodejs-16_x
-    pam-reattach
+    #bitwarden-cli
+    #cobalt
+    lima
+    nodejs_20
+    steampipe
+    pkgs.rclone
   ]  ++ (if pkgs.stdenv.isLinux then [
+    pkgs.gdb
+    pkgs.gcc
     pkgs.trivy
     pkgs.translate-shell
     pkgs.skopeo
     pkgs.umoci
     pkgs.nerdctl
     pkgs.neofetch
-    pkgs.rclone
     pkgs.aria2
     pkgs.clipman
     pkgs.strace
@@ -105,6 +104,8 @@ with autoPatchelfHook;
     pkgs.wl-clipboard
     (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "DroidSansMono" ]; })
   ] else [
+    bash
+    pam-reattach
     pkgs.coreutils
     watch
   ]);
@@ -143,6 +144,7 @@ with autoPatchelfHook;
         set -g renumber-windows on
 
         setw -g window-status-format "#(basename #{pane_current_path})".
+        set  -g default-command /bin/zsh
       '';
   };
 
@@ -177,8 +179,12 @@ with autoPatchelfHook;
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    enableAutosuggestions = true;
-    enableSyntaxHighlighting = true;
+    autosuggestion = {
+      enable = true;
+    };
+    syntaxHighlighting = {
+      enable = true;
+    };
     defaultKeymap = "emacs";
     dotDir = ".dotfiles/zsh";
     dirHashes = {
@@ -192,9 +198,8 @@ with autoPatchelfHook;
       GOPATH            = "$HOME/go";
       GO111MODULE       = "auto";
       GIT_SSH           = "/usr/bin/ssh";
-      VAULT_ADDR = "https://v.ikeypose.com";
+      VAULT_ADDR = "https://fly-vault.fly.dev";
       AWS_CLI_AUTO_PROMPT = "on";
-      ASCIINEMA_API_URL = "https://asciinema.ikeypose.com";
     };
 
     shellAliases = {
@@ -202,8 +207,8 @@ with autoPatchelfHook;
         assume="source assume";
         kct="kubectl config use-context $(kubectl config get-contexts -o name | fzf)";
         tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale";
-        #docker="podman";
-        #docker-compose="compose";
+        docker="podman";
+        docker-compose="compose";
     };
     history = {
        expireDuplicatesFirst = true;
@@ -244,7 +249,17 @@ with autoPatchelfHook;
       format = "$kubernetes$env_var$aws$custom$line_break$all$line_break$character";
       kubernetes = {
         disabled = false;
-        style = "blue";
+        style = "cyan";
+        contexts = [
+          {
+            context_pattern = "gke_.*_(?P<cluster>[\\w-]+)";
+            context_alias = "gke-$cluster";
+          }
+          {
+            context_pattern = "(?P<cluster>[\\w-]+)[.].*";
+            context_alias = "$cluster";
+          }
+        ];
       };
       env_var = {
         PROXY = {
@@ -267,17 +282,6 @@ with autoPatchelfHook;
               ap-northeast-1 = "tokyo";
           };
       };
-      custom = {
-        oidc = {
-            disabled = true;
-            command = ''
-                Arn=arn:aws:iam::$(grep -r ''${AWS_ACCESS_KEY_ID:-none} ~/.oidc2aws/ | grep -o "[0-9]\{11,13\}"):role/OrganizationAccountAccessRole && tomlq -r --arg Arn "$Arn" -c '.alias | to_entries[] | select(.value.roleChain[-1]==$Arn) .key' ~/.oidc2aws/oidcconfig
-            '';
-            when = "test \"$AWS_ACCESS_KEY_ID\" != \"\"";
-            shell = "zsh";
-            style = "bright-yellow";
-        };
-      };
     };
   };
 
@@ -289,7 +293,92 @@ with autoPatchelfHook;
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
       vim-surround
-      copilot-vim
+      {
+          plugin = copilot-vim;
+          config = "let g:copilot_filetypes = { 'yaml': v:true }";
+      }
+      {
+          plugin = flash-nvim;
+          config = ''
+          '';
+      }
+      nvim-treesitter
+      plenary-nvim
+      {
+          plugin = codecompanion-nvim;
+          config = ''
+            lua << EOF
+              require("codecompanion").setup({
+                prompt_library = {
+                  ["Generate a GitHub PR description"] = {
+                    strategy = "chat",
+                    description = "Generate a GitHub PR description",
+                    opts = {
+                      is_slash_cmd = true,
+                      short_name = "ghpr",
+                      auto_submit = true,
+                    },
+                    prompts = {
+                      {
+                        role = "user",
+                        content = function()
+                          return string.format(
+                            [[Analyze the following git diff output and generate a clear and concise pull request description. Include a summary of changes, key modifications, and the rationale behind them. Format the description with sections such as 'Summary', 'Changes'. Use markdown formatting for readability:
+
+              ```diff
+              %s
+              ```
+              ]],
+                            vim.fn.system("git diff origin/HEAD")
+                          )
+                        end,
+                        opts = {
+                          contains_code = true,
+                        },
+                      },
+                    },
+                  },
+                },
+                opts = {
+                  display = {
+                    chat = {
+                      show_settings = true,
+                    }
+                  },
+                  strategies = {
+                    chat = {
+                      adapter = 'copilot',
+                    },
+                    inline = {
+                      adapter = 'copilot',
+                    },
+                  },
+                  adapters = {
+                    copilot = function ()
+                      return require('codecompanion.adapters').extend("copilot", {
+                        schema = {
+                          model = {
+                            default = "claude-3.7-sonnet",
+                            choices = {
+                              ["o3-mini-2025-01-31"] = { opts = { can_reason = true } },
+                              ["o1-2024-12-17"] = { opts = { can_reason = true } },
+                              ["o1-mini-2024-09-12"] = { opts = { can_reason = true } },
+                              "claude-3.5-sonnet",
+                              "claude-3.7-sonnet",
+                              "claude-3.7-sonnet-thought",
+                              "gpt-4o-2024-08-06",
+                              "gemini-2.0-flash-001",
+                            }
+                          }
+                        }
+                      })
+                    end,
+                  },
+                }
+              })
+            EOF
+          '';
+      }
       {
           plugin = lightline-vim;
           config = "let g:lightline = {'colorscheme': 'one'}";
@@ -313,6 +402,7 @@ with autoPatchelfHook;
       }
       vim-signify
       vim-fugitive
+      vim-rhubarb
       {
           plugin = vim-go;
           config = ''
@@ -493,7 +583,7 @@ with autoPatchelfHook;
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       " => fzf.vim
       """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      let $FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow -E .git -E .svn'
+      let $FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow -E .git -E .svn -E .terraform'
       command! -bang -nargs=* Rg
         \ call fzf#vim#grep(
         \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
