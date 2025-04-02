@@ -18,8 +18,8 @@ window:
   # Specified in number of columns/lines, not pixels.
   # If both are `0`, this setting is ignored.
   dimensions:
-    columns: 120
-    lines: 40
+    columns: 140
+    lines: 45
     # columns: 120
     # lines: 28
 
@@ -130,8 +130,8 @@ font:
     style: Italic
 
   # Point size
-  size: 11.0
-    #size: 13
+  #size: 11.0
+  size: 14
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -146,68 +146,8 @@ font:
     x: 0
     y: 0
 
-  # Thin stroke font rendering (macOS only)
-  #
-  # Thin strokes are suitable for retina displays, but for non-retina screens
-  # it is recommended to set `use_thin_strokes` to `false`
-  #
-  # macOS >= 10.14.x:
-  #
-  # If the font quality on non-retina display looks bad then set
-  # `use_thin_strokes` to `true` and enable font smoothing by running the
-  # following command:
-  #   `defaults write -g CGFontRenderingFontSmoothingDisabled -bool NO`
-  #
-  # This is a global setting and will require a log out or restart to take
-  # effect.
-  use_thin_strokes: true
-
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
-# Start flavours
-# Base16 iA Light 256 - alacritty color config
-# iA Inc. (modified by aramisgithub)
-colors:
-  # Default colors
-  primary:
-    background: '0xf6f6f6'
-    foreground: '0x181818'
-
-  # Colors the cursor will use if `custom_cursor_colors` is true
-  cursor:
-    text: '0xf6f6f6'
-    cursor: '0x181818'
-
-  # Normal colors
-  normal:
-    black:   '0xf6f6f6'
-    red:     '0x9c5a02'
-    green:   '0x38781c'
-    yellow:  '0xc48218'
-    blue:    '0x48bac2'
-    magenta: '0xa94598'
-    cyan:    '0x2d6bb1'
-    white:   '0x181818'
-
-  # Bright colors
-  bright:
-    black:   '0x898989'
-    red:     '0x9c5a02'
-    green:   '0x38781c'
-    yellow:  '0xc48218'
-    blue:    '0x48bac2'
-    magenta: '0xa94598'
-    cyan:    '0x2d6bb1'
-    white:   '0xf8f8f8'
-
-  indexed_colors:
-    - { index: 16, color: '0xc43e18' }
-    - { index: 17, color: '0x8b6c37' }
-    - { index: 18, color: '0xdedede' }
-    - { index: 19, color: '0xbde5f2' }
-    - { index: 20, color: '0x767676' }
-    - { index: 21, color: '0xe8e8e8' }
-# End flavours
 
 # Visual Bell
 #
@@ -347,9 +287,6 @@ working_directory: None
 # backend cannot be initialized.
 enable_experimental_conpty_backend: false
 
-# Send ESC (\x1b) before characters when alt is pressed.
-alt_send_esc: true
-
 debug:
   # Display the time it takes to redraw each frame.
   render_timer: false
@@ -479,18 +416,25 @@ key_bindings:
   #- { key: Return,   mods: Alt,           action: ToggleFullscreen }
 
   # (macOS only)
-  #- { key: Key0,   mods: Command,         action: ResetFontSize    }
-  #- { key: Equals, mods: Command,         action: IncreaseFontSize }
-  #- { key: Add,    mods: Command,         action: IncreaseFontSize }
-  #- { key: Minus,  mods: Command,         action: DecreaseFontSize }
-  #- { key: K,      mods: Command,         action: ClearHistory     }
-  #- { key: K,      mods: Command,         chars: "\x0c"            }
-  #- { key: V,      mods: Command,         action: Paste            }
-  #- { key: C,      mods: Command,         action: Copy             }
-  #- { key: H,      mods: Command,         action: Hide             }
-  #- { key: Q,      mods: Command,         action: Quit             }
-  #- { key: W,      mods: Command,         action: Quit             }
-  #- { key: F,      mods: Command|Control, action: ToggleFullscreen }
+  - { key: Key0,   mods: Command,         action: ResetFontSize    }
+  - { key: Equals, mods: Command,         action: IncreaseFontSize }
+    #- { key: Add,    mods: Command,         action: IncreaseFontSize }
+  - { key: Minus,  mods: Command,         action: DecreaseFontSize }
+  - { key: K,      mods: Command,         action: ClearHistory     }
+  - { key: K,      mods: Command,         chars: "\x0c"            }
+  - { key: V,      mods: Command,         action: Paste            }
+  - { key: C,      mods: Command,         action: Copy             }
+  - { key: H,      mods: Command,         action: Hide             }
+  - { key: Q,      mods: Command,         action: Quit             }
+  - { key: W,      mods: Command,         action: Quit             }
+  - { key: F,      mods: Command|Control, action: ToggleFullscreen }
+
+  - { key: D,  mods: Alt,           chars: "\x1bd"                       }
+  - { key: F,  mods: Alt,           chars: "\x1bf"                       }
+  - { key: B,  mods: Alt,           chars: "\x1bb"                       }
+  - { key: T,  mods: Alt,           chars: "\x1bt"                       }
+  - { key: U,  mods: Alt,           chars: "\x1bu"                       }
+  - { key: L,  mods: Alt,           chars: "\x1bl"                       }
 
   - { key: Paste,                   action: Paste                            }
   - { key: Copy,                    action: Copy                             }
